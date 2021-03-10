@@ -1,0 +1,25 @@
+{
+    "name": "deviscoding/jss-helper",
+    "description": "CLI to assist with common JSS script functions.",
+    "keywords": ["macos","osx","softwareupdate","apple","mac","macadmin","jamf","jss","mdm","cli"],
+    "type": "project",
+    "authors": [
+        {
+            "name": "AMJones",
+            "email": "am@jonesiscoding.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "DevCoding\\Jss\\Helper\\": "src"
+        }
+    },
+    "version": "1.0",
+    "require": {
+        "php": "^7.0",
+        "ext-json": "*",
+        "ext-curl": "*",
+        "symfony/process": "^4.4",
+        "deviscoding/mac-console": "^1.5"
+    }
+}
