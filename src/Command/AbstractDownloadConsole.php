@@ -1,0 +1,388 @@
+<?php
+
+namespace DevCoding\Jss\Helper\Command;
+
+use DevCoding\Mac\Command\AbstractMacConsole;
+use DevCoding\Mac\Objects\MacApplication;
+use DevCoding\Mac\Objects\SemanticVersion;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
+
+abstract class AbstractDownloadConsole extends AbstractMacConsole
+{
+  const CONTINUE = -1;
+
+  /** @var string */
+  protected $_cacheDir;
+  protected $_downloadFile;
+
+  /**
+   * @return bool
+   */
+  abstract protected function isTargetOption();
+
+  abstract protected function getDownloadExtension();
+
+  protected function isAllowUserOption()
+  {
+    return false;
+  }
+
+  protected function configure()
+  {
+    $this
+        ->addArgument('destination', InputArgument::REQUIRED)
+        ->addOption('installed', null, InputOption::VALUE_REQUIRED)
+        ->addOption('target', null, InputOption::VALUE_REQUIRED)
+        ->addOption('overwrite', null, InputOption::VALUE_NONE)
+    ;
+
+    parent::configure();
+  }
+
+  protected function interact(InputInterface $input, OutputInterface $output)
+  {
+    if ($dest = $input->getArgument('destination'))
+    {
+      if (!$installed = $input->getOption('installed'))
+      {
+        if ($version = $this->getAppVersion($dest))
+        {
+          $input->setOption('installed', (string) $version);
+        }
+      }
+    }
+  }
+
+  protected function executeChecks(InputInterface $input, OutputInterface $output)
+  {
+    // Check Vs. Current if Provided
+    $installed = $this->getInstalledVersion();
+    $current   = $this->getTargetVersion();
+    if ($installed && $current)
+    {
+      $this->io()->msg('Is Update Needed?', 50);
+
+      if ($installed->gte($current))
+      {
+        $this->successbg('no');
+        $this->io()->blankln();
+
+        return self::EXIT_SUCCESS;
+      }
+      else
+      {
+        $this->successbg('yes');
+      }
+    }
+    // Check if already installed unless overwriting
+    elseif (!$this->io()->getOption('overwrite'))
+    {
+      $this->io()->msg('Is Install Needed?', 50);
+      if ($this->isInstalled())
+      {
+        $this->successbg('no');
+        $this->io()->blankln();
+
+        return self::EXIT_SUCCESS;
+      }
+      else
+      {
+        $this->successbg('yes');
+      }
+    }
+
+    return self::CONTINUE;
+  }
+
+  protected function executeDownload(InputInterface $input, OutputInterface $output)
+  {
+    $downFile = $this->getDownloadFile();
+    if ($dUrl = $this->getDownloadUrl())
+    {
+      $this->io()->msg('Downloading File', 50);
+
+      if ($this->getDownload($dUrl, $downFile))
+      {
+        $this->successbg('SUCCESS');
+      }
+      else
+      {
+        $this->errorbg('ERROR');
+        $this->io()->blankln();
+
+        return self::EXIT_ERROR;
+      }
+    }
+
+    return self::CONTINUE;
+  }
+
+  // region //////////////////////////////////////////////// Information Methods
+
+  /**
+   * @param string $path
+   *
+   * @return SemanticVersion|null
+   */
+  protected function getAppVersion($path)
+  {
+    if ('app' == pathinfo($path, PATHINFO_EXTENSION) && is_dir($path))
+    {
+      return (new MacApplication($path))->getShortVersion();
+    }
+
+    return null;
+  }
+
+  protected function isApp()
+  {
+    $ext = pathinfo($this->getDestination(), PATHINFO_EXTENSION);
+
+    return 'app' == $ext;
+  }
+
+  protected function isInstalled()
+  {
+    return ($this->isApp()) ? is_dir($this->getDestination()) : is_file($this->getDestination());
+  }
+
+  /**
+   * @param SemanticVersion $current
+   *
+   * @return bool
+   */
+  protected function isVersionMatch($current)
+  {
+    // Compare with current version if given
+    $new = $this->getAppVersion($this->getDestination());
+
+    return $new && $new->eq($current);
+  }
+
+  // endregion ///////////////////////////////////////////// End Information Methods
+
+  // region //////////////////////////////////////////////// Input/Output Methods
+
+  /**
+   * @return SemanticVersion|null
+   */
+  protected function getTargetVersion()
+  {
+    if ($ver = $this->io()->getOption('target'))
+    {
+      return new SemanticVersion($ver);
+    }
+
+    return null;
+  }
+
+  /**
+   * @return SemanticVersion|null
+   */
+  protected function getInstalledVersion()
+  {
+    if ($ver = $this->io()->getOption('installed'))
+    {
+      return new SemanticVersion($ver);
+    }
+
+    return null;
+  }
+
+  /**
+   * @return string
+   */
+  protected function getDestination()
+  {
+    return $this->io()->getArgument('destination');
+  }
+
+  /**
+   * @return string
+   */
+  protected function getDownloadUrl()
+  {
+    return $this->io()->getArgument('url');
+  }
+
+  protected function successbg($msg)
+  {
+    $this->io()->write('[')->success(strtoupper($msg))->writeln(']');
+
+    return $this;
+  }
+
+  protected function errorbg($msg)
+  {
+    $this->io()->write('[')->error(strtoupper($msg))->writeln(']');
+
+    return $this;
+  }
+
+  // endregion ///////////////////////////////////////////// End Input/Output Methods
+
+  // region //////////////////////////////////////////////// Download Methods
+
+  /**
+   * @return string
+   */
+  protected function getDownloadFile()
+  {
+    if (empty($this->_downloadFile))
+    {
+      $this->_downloadFile = $this->getTempFile($this->getDownloadExtension());
+    }
+
+    return $this->_downloadFile;
+  }
+
+  protected function getDownload($url, $file)
+  {
+    $fp = fopen($file, 'w+');
+    $ch = curl_init(str_replace(' ', '%20', $url));
+    curl_setopt($ch, CURLOPT_FILE, $fp);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    curl_close($ch);
+    fclose($fp);
+
+    if (200 == $code)
+    {
+      chmod($file, 0755);
+
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  protected function getUrl($url, $default = null, $etag = null)
+  {
+    $ch = curl_init($url);
+    $rq = [];
+    if ($etag)
+    {
+      $rq[] = sprintf('If-None-Match: %s', $etag);
+    }
+
+    curl_setopt($ch, CURLOPT_HEADER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $rq);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Jamf Fetcher');
+
+    $resp = curl_exec($ch);
+    $len  = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    $head = substr($resp, 0, $len);
+    $body = substr($resp, $len);
+    $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+
+    $header = [];
+    foreach (explode(PHP_EOL, $head) as $line)
+    {
+      $parts = explode(':', $line);
+
+      if (count($parts) > 1)
+      {
+        $key = trim($parts[0]);
+        $val = trim($parts[1]);
+
+        $header[$key] = $val;
+      }
+    }
+
+    curl_close($ch);
+
+    if (304 == $code)
+    {
+      return ['headers' => $header, 'body' => $default, 'cached' => true];
+    }
+    else
+    {
+      return ['headers' => $header, 'body' => $body, 'cached' => false];
+    }
+  }
+
+  // endregion ///////////////////////////////////////////// End Download Methods
+
+  // region //////////////////////////////////////////////// Caching Methods
+
+  protected function getCacheDir()
+  {
+    if (empty($this->_cacheDir))
+    {
+      if (is_dir('/Library/JSS'))
+      {
+        $this->_cacheDir = '/Library/JSS/HelperCache';
+      }
+      else
+      {
+        $this->_cacheDir = '/tmp/HelperCache';
+      }
+    }
+
+    if (!is_dir($this->_cacheDir))
+    {
+      mkdir($this->_cacheDir, 0777, true);
+    }
+
+    return $this->_cacheDir;
+  }
+
+  protected function getCachedFile($name)
+  {
+    $path = sprintf('%s/%s', $this->getCacheDir(), $name);
+
+    return is_file($path) ? file_get_contents($path) : null;
+  }
+
+  protected function setCachedFile($name, $contents)
+  {
+    $path = sprintf('%s/%s', $this->getCacheDir(), $name);
+
+    return false !== file_put_contents($path, $contents);
+  }
+
+  // endregion ///////////////////////////////////////////// End Caching Methods
+
+  // region //////////////////////////////////////////////// Install Methods
+
+  protected function getTempFile($ext)
+  {
+    $basename = pathinfo($this->getDestination(), PATHINFO_BASENAME);
+
+    return tempnam($this->getCacheDir(), $basename).'.'.$ext;
+  }
+
+  protected function installPkgFile($pkgFile, &$error)
+  {
+    $cmd     = sprintf('installer -allowUntrusted -pkg "%s" -target / 1>/dev/null', $pkgFile);
+    $Process = Process::fromShellCommandline($cmd);
+    $Process->run();
+
+    if (!$Process->isSuccessful())
+    {
+      $error = $Process->getErrorOutput();
+      if (empty($error))
+      {
+        $error = $Process->getOutput();
+      }
+
+      return false;
+    }
+
+    return true;
+  }
+}
