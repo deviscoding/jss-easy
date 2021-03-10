@@ -15,13 +15,13 @@ $command[] = new DevCoding\Jss\Helper\Command\Write\WriteLnCommand();
 // Installer Command
 $command[] = new DevCoding\Jss\Helper\Command\InstallCommand();
 // Info Commands
-$command[] = new DevCoding\Jss\Helper\Command\HardwareCommand();
-$command[] = new DevCoding\Jss\Helper\Command\OsCommand();
-$command[] = new DevCoding\Jss\Helper\Command\AppCommand();
+$command[] = new DevCoding\Jss\Helper\Command\Info\HardwareCommand();
+$command[] = new DevCoding\Jss\Helper\Command\Info\OsCommand();
+$command[] = new DevCoding\Jss\Helper\Command\Info\AppCommand();
 // Download & Install Commands
-$command[] = new DevCoding\Jss\Helper\Command\GithubInstallCommand();
-$command[] = new DevCoding\Jss\Helper\Command\PkgInstallCommand();
-$command[] = new DevCoding\Jss\Helper\Command\DmgInstallCommand();
+$command[] = new DevCoding\Jss\Helper\Command\Download\GithubInstallCommand();
+$command[] = new DevCoding\Jss\Helper\Command\Download\PkgInstallCommand();
+$command[] = new DevCoding\Jss\Helper\Command\Download\DmgInstallCommand();
 $app       = new Application('JssHelper', 'v1.0');
 $app->addCommands($command);
 $app->run();
