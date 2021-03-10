@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command;
+namespace DevCoding\Jss\Helper\Command\Write;
 
 use DevCoding\Command\Base\IOHelper;
 use DevCoding\Mac\Command\AbstractMacConsole;
@@ -23,6 +23,8 @@ class AbstractWriteConsole extends AbstractMacConsole
 
   protected function configure()
   {
+    $this->configureAliases(get_class($this));
+
     foreach (self::FORMATS as $FORMAT)
     {
       if (!empty($FORMAT))
@@ -32,13 +34,57 @@ class AbstractWriteConsole extends AbstractMacConsole
     }
   }
 
+  protected function configureAliases($class)
+  {
+    $aliases = [];
+    foreach (self::FORMATS as $FORMAT)
+    {
+      if (WriteCommand::class === $class)
+      {
+        $aliases[] = $FORMAT;
+      }
+      elseif (WriteLnCommand::class === $class)
+      {
+        $aliases[] = $FORMAT.'ln';
+      }
+      elseif (BadgeCommand::class === $class)
+      {
+        $aliases[] = $FORMAT.'bg';
+      }
+    }
+
+    $this->setAliases($aliases);
+
+    return $this;
+  }
+
   protected function interact(InputInterface $input, OutputInterface $output)
   {
     $this->setFormatOption($input);
   }
 
+  protected function getAliasUsed(InputInterface $input)
+  {
+    $arr = explode(' ', (string) $input);
+
+    return reset($arr);
+  }
+
   protected function setFormatOption(InputInterface $input)
   {
+    if ($alias = $this->getAliasUsed($input))
+    {
+      foreach (self::FORMATS as $FORMAT)
+      {
+        if (0 === strpos($alias, $FORMAT))
+        {
+          $input->setOption('format', $FORMAT);
+
+          return $this;
+        }
+      }
+    }
+
     foreach (self::FORMATS as $FORMAT)
     {
       if ($input->hasOption($FORMAT) && $input->getOption($FORMAT))

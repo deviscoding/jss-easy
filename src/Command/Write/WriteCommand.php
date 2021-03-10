@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command;
+namespace DevCoding\Jss\Helper\Command\Write;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,7 +17,7 @@ class WriteCommand extends AbstractWriteConsole
         ->addArgument('text', InputArgument::REQUIRED)
         ->addOption('format', 'f', InputOption::VALUE_REQUIRED, 'Format of Text')
         ->addOption('line', 'ln', InputOption::VALUE_NONE, 'Add New Line After Text')
-        ->addOption('width', 'w', InputOption::VALUE_REQUIRED, 'Width of Text', 50)
+        ->addOption('width', 'w', InputOption::VALUE_REQUIRED, 'Width of Text')
     ;
 
     parent::configure();
