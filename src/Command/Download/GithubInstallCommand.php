@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command;
+namespace DevCoding\Jss\Helper\Command\Download;
 
 use DevCoding\Mac\Objects\SemanticVersion;
 use Symfony\Component\Console\Input\InputArgument;

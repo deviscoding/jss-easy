@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command;
+namespace DevCoding\Jss\Helper\Command\Info;
 
 use DevCoding\Mac\Command\AbstractMacConsole;
 
@@ -45,7 +45,7 @@ abstract class AbstractInfoConsole extends AbstractMacConsole
         }
 
         $pKey = ($prefix) ? $prefix.'.'.$key : $key;
-        
+
         $this->io()->info($pKey.':', 50)->writeln($value);
       }
 

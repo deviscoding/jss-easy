@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command;
+namespace DevCoding\Jss\Helper\Command\Info;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

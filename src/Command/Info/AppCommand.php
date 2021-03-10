@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command;
+namespace DevCoding\Jss\Helper\Command\Info;
 
 use DevCoding\Mac\Objects\MacApplication;
 use DevCoding\Mac\Objects\SemanticVersion;

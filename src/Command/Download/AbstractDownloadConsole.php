@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command;
+namespace DevCoding\Jss\Helper\Command\Download;
 
 use DevCoding\Mac\Command\AbstractMacConsole;
 use DevCoding\Mac\Objects\MacApplication;
