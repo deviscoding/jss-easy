@@ -2,7 +2,7 @@
 
 namespace DevCoding\Jss\Helper\Command\Download;
 
-use DevCoding\Jss\Helper\Command\PkgFile;
+use DevCoding\Jss\Helper\Object\File\PkgFile;
 use DevCoding\Mac\Objects\MacApplication;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

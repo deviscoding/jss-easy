@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command;
+namespace DevCoding\Jss\Helper\Object\File;
 
 class PkgFile extends \SplFileInfo
 {
