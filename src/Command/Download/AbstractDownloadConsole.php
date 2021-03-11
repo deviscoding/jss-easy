@@ -18,6 +18,8 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
   /** @var string */
   protected $_cacheDir;
   protected $_downloadFile;
+  /** @var SemanticVersion */
+  protected $_target;
 
   /**
    * @return bool
@@ -36,9 +38,13 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     $this
         ->addArgument('destination', InputArgument::REQUIRED)
         ->addOption('installed', null, InputOption::VALUE_REQUIRED)
-        ->addOption('target', null, InputOption::VALUE_REQUIRED)
         ->addOption('overwrite', null, InputOption::VALUE_NONE)
     ;
+
+    if ($this->isTargetOption())
+    {
+      $this->addOption('target', null, InputOption::VALUE_REQUIRED);
+    }
 
     parent::configure();
   }
@@ -172,9 +178,12 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
    */
   protected function getTargetVersion()
   {
-    if ($ver = $this->io()->getOption('target'))
+    if (empty($this->_target))
     {
-      return new SemanticVersion($ver);
+      if ($ver = $this->io()->getOption('target'))
+      {
+        return new SemanticVersion($ver);
+      }
     }
 
     return null;
@@ -191,6 +200,18 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     }
 
     return null;
+  }
+
+  /**
+   * @param SemanticVersion|string $target
+   *
+   * @return $this
+   */
+  protected function setTargetVersion($target)
+  {
+    $this->_target = $target instanceof SemanticVersion ? $target : new SemanticVersion($target);
+
+    return $this;
   }
 
   /**
