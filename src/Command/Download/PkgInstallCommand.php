@@ -60,48 +60,52 @@ class PkgInstallCommand extends AbstractDownloadConsole
       $aErrors = explode("\n", $errors);
       foreach ($aErrors as $error)
       {
-        $this->io()->write('  '.$error);
+        $this->io()->writeln('  '.$error);
       }
 
-      return self::EXIT_ERROR;
+      $retval = self::EXIT_ERROR;
     }
     elseif (!$this->isInstalled())
     {
       $this->errorbg('error');
-      $this->io()->write('  Application not found at destination: '.$this->getDestination());
+      $this->io()->writeln('  Application not found at destination: '.$this->getDestination());
 
-      return self::EXIT_ERROR;
+      $retval = self::EXIT_ERROR;
     }
     elseif ($target && !$this->isVersionMatch($target))
     {
       $this->errorbg('error');
       if ($new = $this->getAppVersion($this->getDestination()))
       {
-        $this->io()->write(sprintf('  New Version (%s) != Target Version (%s)!', $new, $target));
+        $this->io()->writeln(sprintf('  New Version (%s) != Target Version (%s)!', $new, $target));
       }
       else
       {
-        $this->io()->write('  Cannot read new version number!');
+        $this->io()->writeln('  Cannot read new version number!');
       }
+
+      $retval = self::EXIT_ERROR;
     }
     else
     {
       $this->successbg('SUCCESS');
+
+      $retval = self::EXIT_SUCCESS;
     }
 
     // Clean Up
-    $this->io()->msg('Cleaning Up');
+    $this->io()->msg('Cleaning Up', 50);
     if (file_exists($pkgFile) && !unlink($pkgFile))
     {
       $this->errorbg('ERROR');
 
-      return self::EXIT_ERROR;
+      $retval = self::EXIT_ERROR;
     }
     else
     {
       $this->successbg('SUCCESS');
     }
 
-    return self::EXIT_SUCCESS;
+    return $retval;
   }
 }

@@ -118,7 +118,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
       }
       elseif ($File instanceof PkgFile)
       {
-        $this->io()->msg('Installing from PKG');
+        $this->io()->msg('Installing from PKG', 50);
         if (!$this->installPkgFile($File, $errors))
         {
           $retval = self::EXIT_ERROR;
@@ -130,7 +130,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
       }
       else
       {
-        $this->io()->msg('Copying File to Destination');
+        $this->io()->msg('Copying File to Destination', 50);
         if (!$this->installFile($File, $errors))
         {
           $retval = self::EXIT_ERROR;
@@ -149,7 +149,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
           $errors = explode("\n", $errors);
           foreach ($errors as $error)
           {
-            $this->io()->write('  '.$error);
+            $this->io()->writeln('  '.$error);
           }
         }
       }
@@ -160,11 +160,12 @@ class DmgInstallCommand extends AbstractDownloadConsole
     }
 
     // Verify Installation
+    $this->io()->msg('Verifying Installation', 50);
     $target = $this->getTargetVersion();
     if (!$this->isInstalled())
     {
       $this->errorbg('error');
-      $this->io()->write('  Application not found at destination: '.$this->getDestination());
+      $this->io()->writeln('  Application not found at destination: '.$this->getDestination());
     }
     elseif ($target && !$this->isVersionMatch($target))
     {
@@ -173,11 +174,11 @@ class DmgInstallCommand extends AbstractDownloadConsole
       $this->errorbg('error');
       if ($new = $this->getAppVersion($this->getDestination()))
       {
-        $this->io()->write(sprintf('  New Version (%s) != Target Version (%s)!', $new, $target));
+        $this->io()->writeln(sprintf('  New Version (%s) != Target Version (%s)!', $new, $target));
       }
       else
       {
-        $this->io()->write('  Cannot read new version number!');
+        $this->io()->writeln('  Cannot read new version number!');
       }
     }
     else
@@ -188,7 +189,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
     }
 
     // Unmount
-    $this->io()->msg('Unmounting Volume');
+    $this->io()->msg('Unmounting Volume', 50);
     if (!$this->unmount($mount, $error))
     {
       $this->errorbg('ERROR');
@@ -200,11 +201,12 @@ class DmgInstallCommand extends AbstractDownloadConsole
     }
 
     // Clean Up
-    $this->io()->msg('Cleaning Up');
+    $this->io()->msg('Cleaning Up', 50);
     if (file_exists($dmgFile) && !unlink($dmgFile))
     {
       $this->errorbg('ERROR');
-      $this->io()->write('  Download could not be removed.');
+      $this->io()->write('  Download: '.$dmgFile);
+      $this->io()->write('  Download File could not be removed.');
 
       return self::EXIT_ERROR;
     }
@@ -294,13 +296,14 @@ class DmgInstallCommand extends AbstractDownloadConsole
   {
     if (is_dir($mount['volume']))
     {
-      $cmd     = sprintf('/usr/bin/hdiutil detach "%s" -quiet', $mount['dev']);
+      $cmd     = sprintf('/usr/bin/hdiutil detach "%s"', $mount['dev']);
       $Process = Process::fromShellCommandline($cmd);
       $Process->run();
 
       if (!$Process->isSuccessful())
       {
-        $error = $Process->getErrorOutput();
+        $error = 'volume: '.$mount['volume']."\ndevice: ".$mount['dev']."\n";
+        $error .= $Process->getErrorOutput();
 
         return false;
       }
@@ -311,7 +314,8 @@ class DmgInstallCommand extends AbstractDownloadConsole
         ++$x;
         if ($x > 30)
         {
-          $error = 'Volume still exists after unmount.';
+          $error = 'volume: '.$mount['volume']."\ndevice: ".$mount['dev']."\n";
+          $error .= 'Volume still exists after unmount.';
 
           return false;
         }
