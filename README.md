@@ -1,11 +1,11 @@
 # JSS Helper
-In developing scripts for a fleet of Mac computers using Jamf Pro.  I found that I often needed the same functionality in many scripts.  As Jamf does not offer any sort of shared script library, that often led to repeating blocks of code and updating many scripts if changes were needed. The JSS Helper application was created to streamline scripts by providing assistance with three types of functionality:
+In developing scripts to work with Jamf Pro to manage a fleet of Mac computers, I found that similar functionality was often needed in each script.  As Jamf does not offer any sort of shared script library, this often led to repeating blocks of code and updating many scripts when changes were needed. The JSS Helper application was created to streamline scripts by providing assistance with three types of functionality:
 
 * Downloads & Installations
 * Script Output
 * Information Gathering
 
-While it was designed for use with Jamf Pro, it may be used with or MDM systems, or without any MDM system.
+While it was designed for use with Jamf Pro, it may be used with other MDM systems, or without any MDM system.
 
 ## Installation, Dependencies, and Compatibility
 
@@ -58,6 +58,8 @@ These commands help with the download and installation of executables and applic
 ### Github Installer
 Downloads a file from a GitHub Repo's release, and installs it in a given path.  Existing files are not overwritten unless the `--overwrite` flag or the `--installed` flag are given. When provided with the version currently installed using the `--installed` flag, this command will check the latest release to determine if an update is needed.
 
+Example Usage:
+
     jhelper install:github <destination> --repo=<repo> --file=<file_in_release>
     jhelper install:github /usr/local/bin/jhelper --repo=deviscoding/jss-helper --file=jhelper.phar
 
@@ -65,6 +67,10 @@ The permissions of downloaded files are set to be executable (0755).
 
 ### PKG Installer
 Downloads a PKG file, installs, and confirms the target file or macOS app bundle is present. When the `--target` flag is given, and the destination is a macOS app bundle, the version is compared _before_ the download to verify that an update is needed.  The version is also verified _after_ installation.
+
+Example usage:
+
+    jhelper install:pkg <destination> <url>
 
 Existing files are not overwritten unless the one of the following is true:
 
@@ -75,7 +81,11 @@ Existing files are not overwritten unless the one of the following is true:
 After the installation, the downloaded PKG file is removed.
 
 ### DMG Installer
-Downloads a DMG file, mounts the DMG, then inspects the contents to determine what is needed, using the following logic
+Downloads a DMG file, mounts the DMG, then inspects the contents to determine what is needed, using the logic in the table below.
+
+Example usage:
+
+    jhelper install:dmg <destination> <url>
 
 | DMG Contains | Action |
 |--|--|
@@ -83,8 +93,6 @@ Downloads a DMG file, mounts the DMG, then inspects the contents to determine wh
 | Single PKG File | PKG file is installed using the same criteria as the PKG installer command above. After installation, if a `--target` version is given & _destination_ is an app, the version is verified. |
 | Other File Types | If a filename matches the _destination_, that file is copied to destination unless already present.  Files are overwritten only if the `--overwrite` flag is given. |
 | Multiple PKG Files | No Action Taken |
-
-    jhelper install:dmg <destination> <url>
 
 After the installation, the volume is unmounted, and the DMG file is removed.
 
