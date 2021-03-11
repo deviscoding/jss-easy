@@ -13,7 +13,7 @@ $command[] = new DevCoding\Jss\Helper\Command\Write\BadgeCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Write\WriteCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Write\WriteLnCommand();
 // Installer Command
-$command[] = new DevCoding\Jss\Helper\Command\InstallCommand();
+$command[] = new DevCoding\Jss\Helper\Command\PrepCommand();
 // Info Commands
 $command[] = new DevCoding\Jss\Helper\Command\Info\HardwareCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Info\OsCommand();
