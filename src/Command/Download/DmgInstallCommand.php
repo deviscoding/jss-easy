@@ -32,17 +32,17 @@ class DmgInstallCommand extends AbstractDownloadConsole
   protected function execute(InputInterface $input, OutputInterface $output)
   {
     // Check Vs. Current if Provided
-    $checks = $this->executeChecks($input, $output);
-    if (self::CONTINUE !== $checks)
+    $retval = $this->executeUpgradeCheck($input, $output);
+    if (self::CONTINUE !== $retval)
     {
-      return $checks;
+      return $retval;
     }
 
     // Download & Install
-    $download = $this->executeDownload($input, $output);
-    if (self::CONTINUE !== $download)
+    $retval = $this->executeDownload($input, $output);
+    if (self::CONTINUE !== $retval)
     {
-      return $download;
+      return $retval;
     }
 
     // Mount the DMG

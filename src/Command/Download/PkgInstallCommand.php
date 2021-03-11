@@ -18,7 +18,6 @@ class PkgInstallCommand extends AbstractDownloadConsole
     return 'pkg';
   }
 
-
   protected function configure()
   {
     parent::configure();
@@ -29,10 +28,19 @@ class PkgInstallCommand extends AbstractDownloadConsole
   protected function execute(InputInterface $input, OutputInterface $output)
   {
     // Check Vs. Current if Provided
-    $checks = $this->executeChecks($input, $output);
+    $checks = $this->executeUpgradeCheck($input, $output);
     if (self::CONTINUE !== $checks)
     {
       return $checks;
+    }
+    else
+    {
+      // Check if we should overwrite
+      $checks = $this->executeOverwriteCheck($input, $output);
+      if (self::CONTINUE !== $checks)
+      {
+        return $checks;
+      }
     }
 
     // Download & Install

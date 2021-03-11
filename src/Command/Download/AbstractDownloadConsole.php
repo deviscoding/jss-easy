@@ -63,7 +63,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     }
   }
 
-  protected function executeChecks(InputInterface $input, OutputInterface $output)
+  protected function executeUpgradeCheck(InputInterface $input, OutputInterface $output)
   {
     // Check Vs. Current if Provided
     $installed = $this->getInstalledVersion();
@@ -84,8 +84,14 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
         $this->successbg('yes');
       }
     }
+
+    return self::CONTINUE;
+  }
+
+  protected function executeOverwriteCheck(InputInterface $input, OutputInterface $output)
+  {
     // Check if already installed unless overwriting
-    elseif (!$this->io()->getOption('overwrite'))
+    if (!$this->io()->getOption('overwrite'))
     {
       $this->io()->msg('Is Install Needed?', 50);
       if ($this->isInstalled())
