@@ -22,6 +22,6 @@ $command[] = new DevCoding\Jss\Helper\Command\Info\AppCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Download\GithubInstallCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Download\PkgInstallCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Download\DmgInstallCommand();
-$app       = new Application('JssHelper', 'v1.0');
+$app       = new Application('JHelper', 'v1.0');
 $app->addCommands($command);
 $app->run();
