@@ -468,4 +468,35 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
 
     return true;
   }
+
+  protected function installAppFile($appFile, &$error)
+  {
+    return $this->installFile($appFile, $error);
+  }
+
+  /**
+   * @param string $file
+   * @param string $error
+   *
+   * @return bool
+   */
+  protected function installFile($file, &$error)
+  {
+    $cmd     = sprintf('ditto -rsrc "%s" "%s"', $file, $this->getDestination());
+    $Process = Process::fromShellCommandline($cmd);
+    $Process->run();
+
+    if (!$Process->isSuccessful())
+    {
+      $error = $Process->getErrorOutput();
+      if (empty($error))
+      {
+        $error = $Process->getOutput();
+      }
+
+      return false;
+    }
+
+    return true;
+  }
 }
