@@ -9,9 +9,14 @@ While it was designed for use with Jamf Pro, it may be used with or MDM systems,
 
 ## Installation, Dependencies, and Compatibility
 
-For normal installation, simply download the  `jhelper.phar` to your utility path, and rename it, for example `/usr/local/bin/jhelper`.  For installation on client systems, it is recommended that you use a policy with a script.  See the `/resources` directory for an example.
+For installation on client systems, it is recommended that you use a policy that runs a script, called via a trigger.  See the `/resources` directory for an example.  Once you have a policy created, you can use **jhelper** in your scripts by adding the following lines:
 
-At this time, JSS Helper has no dependencies when used in macOS High Sierra, Mojave, Catalina, or Big Sur
+    [ -n "$(which jhelper)" ] || jamf policy --trigger <POLICY TRIGGER HERE> || (echo "ERROR: JHelper Not Installed" && exit 1)
+    source "$(jhelper prep)"
+
+At this time, JSS Helper has no dependencies when used in macOS High Sierra, Mojave, Catalina, or Big Sur.  
+
+For testing, simply download the `jhelper.phar` to your utility path, and rename it, for example `/usr/local/bin/jhelper`.
 
 ## Script Output Helpers
 
