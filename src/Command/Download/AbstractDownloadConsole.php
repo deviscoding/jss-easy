@@ -150,11 +150,37 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     return null;
   }
 
+  /**
+   * Determines if the destination is an application bundle.  If the destination isn't present, guesses based on
+   * the extension.
+   *
+   * @return bool
+   */
   protected function isApp()
   {
-    $ext = pathinfo($this->getDestination(), PATHINFO_EXTENSION);
+    if (file_exists($this->getDestination()))
+    {
+      // If present, check for Info.plist
+      return $this->isAppBundle($this->getDestination());
+    }
+    else
+    {
+      $ext = pathinfo($this->getDestination(), PATHINFO_EXTENSION);
 
-    return 'app' == $ext;
+      return 'app' == $ext || 'plugin' == $ext || 'jdk' == $ext;
+    }
+  }
+
+  /**
+   * Determines if the given path is an application bundle.
+   *
+   * @param string $path
+   *
+   * @return bool
+   */
+  protected function isAppBundle($path)
+  {
+    return is_dir($path) && file_exists($path.'/Contents/Info.plist');
   }
 
   protected function isInstalled()
