@@ -188,22 +188,9 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     return ($this->isApp()) ? is_dir($this->getDestination()) : is_file($this->getDestination());
   }
 
-  /**
-   * @param SemanticVersion $current
-   *
-   * @return bool
-   */
-  protected function isVersionMatch($current)
-  {
-    // Compare with current version if given
-    $new = $this->getAppVersion($this->getDestination());
-
-    return $new && $new->eq($current);
-  }
-
   // endregion ///////////////////////////////////////////// End Information Methods
 
-  // region //////////////////////////////////////////////// Input/Output Methods
+  // region //////////////////////////////////////////////// Version Methods
 
   /**
    * @return SemanticVersion|null
@@ -226,12 +213,43 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
    */
   protected function getInstalledVersion()
   {
-    if ($ver = $this->io()->getOption('installed'))
+    if ($this->isAppBundle($this->getDestination()))
+    {
+      return (new MacApplication($this->getDestination()))->getShortVersion();
+    }
+    elseif ($ver = $this->io()->getOption('installed'))
     {
       return new SemanticVersion($ver);
     }
 
     return null;
+  }
+
+  /**
+   * @param SemanticVersion|MacApplication $app_or_ver
+   *
+   * @return bool
+   */
+  protected function isVersionMatch($app_or_ver)
+  {
+    // Compare with current version if given
+    $new  = $this->getAppVersion($this->getDestination());
+    $comp = ($app_or_ver instanceof MacApplication) ? $this->getAppVersion($app_or_ver) : $app_or_ver;
+
+    return $new instanceof SemanticVersion && $comp instanceof SemanticVersion && $new->eq($comp);
+  }
+
+  /**
+   * @param SemanticVersion|MacApplication $app_or_ver
+   *
+   * @return bool
+   */
+  protected function isVersionGreater($app_or_ver)
+  {
+    $installed = $this->getInstalledVersion();
+    $compare   = ($app_or_ver instanceof MacApplication) ? $app_or_ver->getShortVersion() : $app_or_ver;
+
+    return $installed instanceof SemanticVersion && $compare instanceof SemanticVersion && $compare->gt($installed);
   }
 
   /**
@@ -245,6 +263,10 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
 
     return $this;
   }
+
+  // endregion ///////////////////////////////////////////// End Version Methods
+
+  // region //////////////////////////////////////////////// Input/Output Methods
 
   /**
    * @return string
