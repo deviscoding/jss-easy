@@ -2,6 +2,8 @@
 
 namespace DevCoding\Jss\Helper\Command\Download;
 
+use DevCoding\Jss\Helper\Command\PkgFile;
+use DevCoding\Mac\Objects\MacApplication;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -53,40 +55,107 @@ class DmgInstallCommand extends AbstractDownloadConsole
       $this->errorbg('ERROR');
       $this->io()->write('  '.$error);
 
-      return self::EXIT_ERROR;
+      $retval = self::EXIT_ERROR;
     }
     else
     {
       $this->successbg('SUCCESS');
     }
 
-    $volume = $mount['volume'];
-    $device = $mount['dev'];
-    if ($srcFile = $this->getDestinationFileFromVolume($volume))
+    if (self::CONTINUE === $retval)
     {
-      $this->io()->write('Copying File to Destination');
-      // Copy the File
-      if (!copy($srcFile, $this->getDestination()))
+      $this->io()->msg('Checking DMG for File', 50);
+      if ($File = $this->getDestinationFromVolume($mount['volume']))
       {
-        $this->errorbg('ERROR');
+        $this->successbg('FOUND');
+        if ($File instanceof MacApplication)
+        {
+          // Verify we don't have a version mismatch
+          $offer  = $File->getShortVersion();
+          $target = $this->getTargetVersion();
+          if ($offer && $target && !$target->eq($offer))
+          {
+            $this->io()->msg('Comparing Versions', 50);
+            $this->errorbg('NO MATCH');
+            $retval = self::EXIT_ERROR;
+          }
+          elseif ($offer)
+          {
+            $this->setTargetVersion($offer);
+            $this->io()->msg('Is Update Needed?', 50);
+            $retval = $this->isInstallNeeded($offer);
+            $badge  = self::CONTINUE === $retval ? 'yes' : 'no';
+            $this->successbg($badge);
+          }
+        }
+        else
+        {
+          $retval = $this->executeOverwriteCheck($input, $output);
+        }
+      }
+      else
+      {
+        $this->errorbg('NOT FOUND');
 
-        return self::EXIT_ERROR;
+        $retval = self::EXIT_ERROR;
       }
     }
-    elseif ($pkgFile = $this->getPkgFromVolume($volume))
-    {
-      $this->io()->msg('Installing from PKG');
-      // Install the PKG
-      if (!$this->installPkgFile($pkgFile, $errors))
-      {
-        $this->errorbg('error');
-        $aErrors = explode("\n", $errors);
-        foreach ($aErrors as $error)
-        {
-          $this->io()->write('  '.$error);
-        }
 
-        return self::EXIT_ERROR;
+    // Perform Installation
+    if (self::CONTINUE === $retval && isset($File))
+    {
+      if ($File instanceof MacApplication)
+      {
+        $this->io()->msg('Installing APP Bundle');
+        if (!$this->installAppFile($File, $errors))
+        {
+          $retval = self::EXIT_ERROR;
+        }
+        else
+        {
+          $retval = self::EXIT_SUCCESS;
+        }
+      }
+      elseif ($File instanceof PkgFile)
+      {
+        $this->io()->msg('Installing from PKG');
+        if (!$this->installPkgFile($File, $errors))
+        {
+          $retval = self::EXIT_ERROR;
+        }
+        else
+        {
+          $retval = self::EXIT_SUCCESS;
+        }
+      }
+      else
+      {
+        $this->io()->msg('Copying File to Destination');
+        if (!$this->installFile($File, $errors))
+        {
+          $retval = self::EXIT_ERROR;
+        }
+        else
+        {
+          $retval = self::EXIT_SUCCESS;
+        }
+      }
+
+      if (self::EXIT_ERROR === $retval)
+      {
+        $this->errorbg('ERROR');
+        if (!empty($errors))
+        {
+          $errors = explode("\n", $errors);
+          foreach ($errors as $error)
+          {
+            $this->io()->write('  '.$error);
+          }
+        }
+      }
+      else
+      {
+        $this->successbg('SUCCESS');
       }
     }
 
@@ -96,11 +165,11 @@ class DmgInstallCommand extends AbstractDownloadConsole
     {
       $this->errorbg('error');
       $this->io()->write('  Application not found at destination: '.$this->getDestination());
-
-      return self::EXIT_ERROR;
     }
     elseif ($target && !$this->isVersionMatch($target))
     {
+      $retval = self::EXIT_ERROR;
+
       $this->errorbg('error');
       if ($new = $this->getAppVersion($this->getDestination()))
       {
@@ -113,6 +182,8 @@ class DmgInstallCommand extends AbstractDownloadConsole
     }
     else
     {
+      $retval = self::EXIT_SUCCESS;
+
       $this->successbg('SUCCESS');
     }
 
@@ -142,20 +213,69 @@ class DmgInstallCommand extends AbstractDownloadConsole
       $this->successbg('SUCCESS');
     }
 
-    return self::EXIT_SUCCESS;
+    return $retval;
   }
 
+  protected function isInstallNeeded($version)
+  {
+    return !$this->isInstalled() || $this->isOverwrite() || $this->isVersionGreater($version);
+  }
+
+  /**
+   * @param string $volume
+   *
+   * @return PkgFile|MacApplication|string|null
+   */
+  protected function getDestinationFromVolume($volume)
+  {
+    if (!$file = $this->getAppFromVolume($volume))
+    {
+      if (!$file = $this->getPkgFromVolume($volume))
+      {
+        $file = $this->getMatchFromVolume($volume);
+      }
+    }
+
+    return $file;
+  }
+
+  /**
+   * @param string $volume
+   *
+   * @return PkgFile|null
+   */
   protected function getPkgFromVolume($volume)
   {
-    foreach (glob($volume.'/*.pkg') as $pkgFile)
+    $pkgFiles = glob($volume.'/*.pkg');
+    if (1 == count($pkgFiles))
     {
-      return $pkgFile;
+      $path = reset($pkgFiles);
+
+      return new PkgFile($path);
     }
 
     return null;
   }
 
-  protected function getDestinationFileFromVolume($volume)
+  /**
+   * @param string $volume
+   *
+   * @return MacApplication|null
+   */
+  protected function getAppFromVolume($volume)
+  {
+    if ($srcFile = $this->getMatchFromVolume($volume))
+    {
+      if ($this->isAppBundle($srcFile))
+      {
+        return new MacApplication($srcFile);
+      }
+    }
+
+    return null;
+  }
+
+  protected function getMatchFromVolume($volume)
   {
     $destFile = pathinfo($this->getDestination(), PATHINFO_BASENAME);
 
@@ -172,30 +292,33 @@ class DmgInstallCommand extends AbstractDownloadConsole
 
   protected function unmount($mount, &$error)
   {
-    $cmd     = sprintf('/usr/bin/hdiutil detach "%s" -quiet', $mount['dev']);
-    $Process = Process::fromShellCommandline($cmd);
-    $Process->run();
-
-    if (!$Process->isSuccessful())
+    if (is_dir($mount['volume']))
     {
-      $error = $Process->getErrorOutput();
+      $cmd     = sprintf('/usr/bin/hdiutil detach "%s" -quiet', $mount['dev']);
+      $Process = Process::fromShellCommandline($cmd);
+      $Process->run();
 
-      return false;
-    }
-
-    $x = 0;
-    do
-    {
-      ++$x;
-      if ($x > 30)
+      if (!$Process->isSuccessful())
       {
-        $error = 'Volume still exists after unmount.';
+        $error = $Process->getErrorOutput();
 
         return false;
       }
 
-      sleep(1);
-    } while (is_dir($mount['volume']));
+      $x = 0;
+      do
+      {
+        ++$x;
+        if ($x > 30)
+        {
+          $error = 'Volume still exists after unmount.';
+
+          return false;
+        }
+
+        sleep(1);
+      } while (is_dir($mount['volume']));
+    }
 
     return true;
   }
