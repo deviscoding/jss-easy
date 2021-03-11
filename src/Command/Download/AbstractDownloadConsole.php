@@ -284,6 +284,14 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     return $this->io()->getArgument('url');
   }
 
+  /**
+   * @return bool
+   */
+  protected function isOverwrite()
+  {
+    return $this->io()->getOption('overwrite');
+  }
+
   protected function successbg($msg)
   {
     $this->io()->write('[')->success(strtoupper($msg))->writeln(']');
