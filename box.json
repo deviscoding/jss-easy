@@ -3,7 +3,7 @@
   "directories": [
     "src",
     "src/Command",
-    "src/Objects"
+    "src/Object"
   ],
   "finder": [
     {
@@ -14,6 +14,6 @@
   ],
   "git-version": "package_version",
   "main": "bin/console",
-  "output": "dist/macupdate.phar",
+  "output": "dist/jhelper.phar",
   "stub": true
 }
