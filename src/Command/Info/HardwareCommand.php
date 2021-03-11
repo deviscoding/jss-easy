@@ -32,7 +32,10 @@ class HardwareCommand extends AbstractInfoConsole
 
   protected function configure()
   {
-    $this->setName('hardware')->addArgument('key', InputArgument::OPTIONAL)->addOption('json', 'j', InputOption::VALUE_NONE);
+    $this
+        ->setName('info:hardware')
+        ->setAliases(['hardware'])
+        ->addArgument('key', InputArgument::OPTIONAL)->addOption('json', 'j', InputOption::VALUE_NONE);
   }
 
   protected function isAllowUserOption(): bool

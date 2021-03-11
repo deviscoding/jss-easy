@@ -24,7 +24,10 @@ class OsCommand extends AbstractInfoConsole
 
   protected function configure()
   {
-    $this->setName('os')->addArgument('key', InputArgument::OPTIONAL)->addOption('json', 'j', InputOption::VALUE_NONE);
+    $this
+        ->setName('info:os')
+        ->setAliases(['os'])
+        ->addArgument('key', InputArgument::OPTIONAL)->addOption('json', 'j', InputOption::VALUE_NONE);
   }
 
   protected function execute(InputInterface $input, OutputInterface $output): int

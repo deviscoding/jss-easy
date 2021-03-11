@@ -28,7 +28,8 @@ class AppCommand extends AbstractInfoConsole
 
   protected function configure()
   {
-    $this->setName('app')
+    $this->setName('info:app')
+         ->setAliases(['app'])
          ->addArgument('criteria', InputArgument::REQUIRED)
          ->addArgument('key', InputArgument::OPTIONAL)
          ->addOption('json', 'j', InputOption::VALUE_NONE)
