@@ -340,7 +340,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
       {
         if (preg_match('/^\/dev\/([^\s]+)\s+([^\/]+)(\/Volumes\/(.*))$/', $line, $matches))
         {
-          return ['dev' => $matches[2], 'volume' => $matches[3]];
+          return ['dev' => $matches[1], 'volume' => $matches[3]];
         }
       }
 
