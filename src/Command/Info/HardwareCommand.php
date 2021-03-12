@@ -30,6 +30,22 @@ class HardwareCommand extends AbstractInfoConsole
   const NETWORK_BLUETOOTH  = 'bluetooth';
   const NETWORK_VPN        = 'vpn';
 
+  const POWER   = 'power';
+  const ACPOWER = 'ac';
+
+  const BATTERY     = 'battery';
+  const INSTALLED   = 'installed';
+  const CYCLES      = 'cycles';
+  const HEALTHY     = 'healthy';
+  const PERCENTAGE  = 'percentage';
+  const UNTIL_EMPTY = 'until_empty';
+  const UNTIL_FULL  = 'until_full';
+
+  const CHARGER   = 'charger';
+  const CONNECTED = 'connected';
+  const CHARGING  = 'charging';
+  const WATTAGE   = 'wattage';
+
   protected function configure()
   {
     $this
@@ -67,6 +83,10 @@ class HardwareCommand extends AbstractInfoConsole
       {
         $data = $this->getCpu($subKey);
       }
+      elseif (false === strpos($theKey, self::POWER))
+      {
+        $data = $this->getPower($subKey);
+      }
       else
       {
         $this->io()->errorln('Unrecognized key.');
@@ -100,6 +120,7 @@ class HardwareCommand extends AbstractInfoConsole
     return [
         self::MODEL   => $this->getModel(),
         self::CPU     => $this->getCpu(),
+        self::POWER   => $this->getPower(),
         self::NETWORK => $this->getNetwork(),
     ];
   }
@@ -227,6 +248,141 @@ class HardwareCommand extends AbstractInfoConsole
       foreach ($subKeys as $subKey)
       {
         $retval[$subKey] = $this->getNetwork($subKey);
+      }
+
+      return $retval;
+    }
+
+    return null;
+  }
+
+  /**
+   * @param string|null $key
+   *
+   * @return string[]|bool|null
+   */
+  protected function getPower($key = null)
+  {
+    $subKeys = [self::ACPOWER, self::BATTERY, self::CHARGER];
+
+    if (self::ACPOWER === $key)
+    {
+      return $this->getDevice()->isAcPowered();
+    }
+    elseif (false !== strpos($key, self::BATTERY))
+    {
+      if (self::BATTERY === $key)
+      {
+        return $this->getBattery();
+      }
+      else
+      {
+        return $this->getBattery($this->getSubkey($key));
+      }
+    }
+    elseif (false !== strpos($key, self::CHARGER))
+    {
+      if (self::CHARGER === $key)
+      {
+        return $this->getCharger();
+      }
+      else
+      {
+        return $this->getCharger($this->getSubkey($key));
+      }
+    }
+    elseif (is_null($key))
+    {
+      $retval = [];
+      foreach ($subKeys as $subKey)
+      {
+        $retval[$subKey] = $this->getPower($subKey);
+      }
+
+      return $retval;
+    }
+
+    return null;
+  }
+
+  /**
+   * @param string|null $key
+   *
+   * @return string[]|bool|null
+   */
+  protected function getBattery($key = null)
+  {
+    $subKeys = [self::INSTALLED, self::HEALTHY, self::CHARGING, self::CYCLES, self::PERCENTAGE, self::UNTIL_EMPTY, self::UNTIL_FULL];
+
+    if (self::INSTALLED === $key)
+    {
+      return $this->getDevice()->getBattery()->isInstalled();
+    }
+    if (self::HEALTHY === $key)
+    {
+      return $this->getDevice()->getBattery()->isInstalled();
+    }
+    if (self::CHARGING === $key)
+    {
+      return $this->getDevice()->getBattery()->isCharging();
+    }
+    if (self::CYCLES === $key)
+    {
+      return $this->getDevice()->getBattery()->getCycles();
+    }
+    if (self::PERCENTAGE === $key)
+    {
+      return $this->getDevice()->getBattery()->getPercentage();
+    }
+    if (self::UNTIL_EMPTY === $key)
+    {
+      return $this->getDevice()->getBattery()->getUntilEmpty('%i');
+    }
+    if (self::UNTIL_FULL === $key)
+    {
+      return $this->getDevice()->getBattery()->getUntilFull('%i');
+    }
+    elseif (is_null($key))
+    {
+      $retval = [];
+      foreach ($subKeys as $subKey)
+      {
+        $retval[$subKey] = $this->getBattery($subKey);
+      }
+
+      return $retval;
+    }
+
+    return null;
+  }
+
+  /**
+   * @param string|null $key
+   *
+   * @return string[]|bool|null
+   */
+  protected function getCharger($key = null)
+  {
+    $subKeys = [self::CONNECTED, self::CHARGING, self::WATTAGE];
+
+    if (self::CONNECTED === $key)
+    {
+      return $this->getDevice()->getCharger()->isConnected();
+    }
+    if (self::CHARGING === $key)
+    {
+      return $this->getDevice()->getCharger()->isActive();
+    }
+    if (self::WATTAGE === $key)
+    {
+      return $this->getDevice()->getCharger()->getWattage();
+    }
+    elseif (is_null($key))
+    {
+      $retval = [];
+      foreach ($subKeys as $subKey)
+      {
+        $retval[$subKey] = $this->getCharger($subKey);
       }
 
       return $retval;
