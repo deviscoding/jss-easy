@@ -2,6 +2,7 @@
 
 namespace DevCoding\Jss\Helper\Command\Info;
 
+use DevCoding\Mac\Objects\AdobeApplication;
 use DevCoding\Mac\Objects\MacApplication;
 use DevCoding\Mac\Objects\SemanticVersion;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,6 +26,12 @@ class AppCommand extends AbstractInfoConsole
   const BUILD         = 'build';
   const PRERELEASE    = 'prerelease';
   const RAW           = 'raw';
+  const SAP           = 'sap';
+  const SLUG          = 'slug';
+  const YEAR          = 'year';
+  const BASE_VERSION  = 'base_version';
+  const UNINSTALL     = 'uninstall';
+  const CC            = 'cc';
 
   protected function configure()
   {
@@ -48,7 +55,14 @@ class AppCommand extends AbstractInfoConsole
 
     if ($MacApp = $this->getApp($theApp))
     {
-      $data = $this->getInfo($MacApp, $theKey);
+      if ($MacApp instanceof AdobeApplication)
+      {
+        $data = $this->getAdobeAppInfo($MacApp, $theKey);
+      }
+      else
+      {
+        $data = $this->getInfo($MacApp, $theKey);
+      }
     }
     else
     {
@@ -79,7 +93,18 @@ class AppCommand extends AbstractInfoConsole
   {
     if (is_dir($key) && is_file($key.'/Contents/Info.plist'))
     {
-      return new MacApplication($key);
+      $MacApp = new MacApplication($key);
+
+      if (false !== stripos($MacApp->getPathname(), 'adobe'))
+      {
+        $MacApp = new AdobeApplication($MacApp->getPathname());
+      }
+
+      return $MacApp;
+    }
+    elseif ($MacApp = AdobeApplication::fromSlug($key))
+    {
+      return $MacApp;
     }
 
     $MacApps = $this->getOs()->getApplications();
@@ -102,6 +127,50 @@ class AppCommand extends AbstractInfoConsole
       {
         return $MacApp;
       }
+    }
+
+    return null;
+  }
+
+  /**
+   * @param AdobeApplication $AdobeApp
+   * @param null             $key
+   *
+   * @return string|string[]|int|int[]
+   */
+  protected function getAdobeAppInfo($AdobeApp, $key = null)
+  {
+    $subKeys = [self::SAP, self::SLUG, self::YEAR, self::BASE_VERSION, self::CC, self::UNINSTALL];
+
+    if (self::SAP === $key)
+    {
+      return $AdobeApp->getSap();
+    }
+    elseif (self::SLUG === $key)
+    {
+      return $AdobeApp->getSlug();
+    }
+    elseif (self::YEAR === $key)
+    {
+      return $AdobeApp->getYear();
+    }
+    elseif (self::BASE_VERSION === $key)
+    {
+      return $AdobeApp->getBaseVersion()->getRaw();
+    }
+    elseif (self::UNINSTALL === $key)
+    {
+      return $AdobeApp->getUninstall();
+    }
+    elseif (is_null($key))
+    {
+      $retval = $this->getInfo($AdobeApp);
+      foreach ($subKeys as $subKey)
+      {
+        $retval[$subKey] = $this->getAdobeAppInfo($AdobeApp, $subKey);
+      }
+
+      return $retval;
     }
 
     return null;
