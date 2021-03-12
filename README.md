@@ -49,8 +49,8 @@ All commands can take a `--json` flag which will change the results to JSON.  Ad
 | Command | Description |
 |--|--|
 | info:os | Provides information about the version, name, and build of the OS.  Additionally, reports any shared and personal caches in use, as well as any custom SUS url. |
-| info:app | Provides the version, name, path, identifier, copyright, filename, and path for the given application, or all applications if no argument is given. |
-| info:hardware | Provides info about the model, cpu, and network of the device. |
+| info:app | Provides the version, name, path, identifier, copyright, filename, and path for the given application, or all applications if no argument is given.  Additional information is provided about Adobe Applications. |
+| info:hardware | Provides info about the model, cpu, power attributes, and network of the device. |
 
 ## Install Commands
 These commands help with the download and installation of executables and applications.  Which command is the most useful may depend on the source and format of the download.
