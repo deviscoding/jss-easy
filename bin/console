@@ -12,8 +12,6 @@ use Symfony\Component\Console\Application;
 $command[] = new DevCoding\Jss\Helper\Command\Write\BadgeCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Write\WriteCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Write\WriteLnCommand();
-// Installer Command
-$command[] = new DevCoding\Jss\Helper\Command\PrepCommand();
 // Info Commands
 $command[] = new DevCoding\Jss\Helper\Command\Info\HardwareCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Info\OsCommand();
@@ -22,6 +20,8 @@ $command[] = new DevCoding\Jss\Helper\Command\Info\AppCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Download\GithubInstallCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Download\PkgInstallCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Download\DmgInstallCommand();
-$app       = new Application('JHelper', 'v1.0');
+// Other Commands
+$command[] = new DevCoding\Jss\Helper\Command\PrepCommand();
+$app       = new Application('JHelper', 'v1.2');
 $app->addCommands($command);
 $app->run();
