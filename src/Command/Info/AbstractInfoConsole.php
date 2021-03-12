@@ -25,9 +25,10 @@ abstract class AbstractInfoConsole extends AbstractMacConsole
   {
     foreach ($data as $key => $value)
     {
+      $pKey = ($prefix) ? $prefix.'.'.$key : $key;
       if (is_array($value))
       {
-        $this->renderOutput($value, $key);
+        $this->renderOutput($value, $pKey);
       }
       else
       {
@@ -43,8 +44,6 @@ abstract class AbstractInfoConsole extends AbstractMacConsole
         {
           $value = 'null';
         }
-
-        $pKey = ($prefix) ? $prefix.'.'.$key : $key;
 
         $this->io()->info($pKey.':', 50)->writeln($value);
       }
