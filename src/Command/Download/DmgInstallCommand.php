@@ -73,11 +73,18 @@ class DmgInstallCommand extends AbstractDownloadConsole
           // Verify we don't have a version mismatch
           $offer  = $File->getShortVersion();
           $target = $this->getTargetVersion();
-          if ($offer && $target && !$target->eq($offer))
+          if ($offer && $target)
           {
-            $this->io()->msg('Comparing Versions', 50);
-            $this->errorbg('NO MATCH');
-            $retval = self::EXIT_ERROR;
+            if ($target->eq($offer))
+            {
+              $retval = self::CONTINUE;
+            }
+            else
+            {
+              $this->io()->msg('Comparing Versions', 50);
+              $this->errorbg('NO MATCH');
+              $retval = self::EXIT_ERROR;
+            }
           }
           elseif ($offer)
           {
@@ -86,6 +93,13 @@ class DmgInstallCommand extends AbstractDownloadConsole
             $retval = $this->isInstallNeeded($offer);
             $badge  = self::CONTINUE === $retval ? 'yes' : 'no';
             $this->successbg($badge);
+          }
+          else
+          {
+            $this->io()->msg('Comparing Versions', 50);
+            $this->errorbg('ERROR');
+            $this->io()->write('  Could not determine version within DMG.');
+            $retval = self::EXIT_ERROR;
           }
         }
         else
