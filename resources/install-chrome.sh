@@ -12,7 +12,7 @@
 
 ### region ############################################ Dependencies
 
-[ -n "$(which jhelper)" ] || jamf policy --trigger InstallJHelper || (echo "ERROR: JHelper Not Installed" && exit 1)
+([ -z "$(which jhelper)" ] && jamf policy --trigger InstallJHelper) && ([ -z "$(which jhelper)" ] && echo "ERROR: JHelper Not Installed") && exit 1
 
 # shellcheck source=_jhelper.sh
 source "$(jhelper prep)"
