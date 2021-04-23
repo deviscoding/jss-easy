@@ -75,15 +75,15 @@ class HardwareCommand extends AbstractInfoConsole
       {
         $data = $this->getNetwork($subKey);
       }
-      elseif (false === strpos($theKey, self::MODEL))
+      elseif (false !== strpos($theKey, self::MODEL))
       {
         $data = $this->getModel($subKey);
       }
-      elseif (false === strpos($theKey, self::CPU))
+      elseif (false !== strpos($theKey, self::CPU))
       {
         $data = $this->getCpu($subKey);
       }
-      elseif (false === strpos($theKey, self::POWER))
+      elseif (false !== strpos($theKey, self::POWER))
       {
         $data = $this->getPower($subKey);
       }
@@ -267,7 +267,7 @@ class HardwareCommand extends AbstractInfoConsole
 
     if (self::ACPOWER === $key)
     {
-      return $this->getDevice()->isAcPowered();
+      return !$this->getDevice()->isBatteryPowered();
     }
     elseif (false !== strpos($key, self::BATTERY))
     {
