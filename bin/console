@@ -9,19 +9,19 @@ require_once $dir.'/vendor/autoload.php';
 use Symfony\Component\Console\Application;
 
 // Output Commands
-$command[] = new DevCoding\Jss\Helper\Command\Write\BadgeCommand();
-$command[] = new DevCoding\Jss\Helper\Command\Write\WriteCommand();
-$command[] = new DevCoding\Jss\Helper\Command\Write\WriteLnCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Write\BadgeCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Write\WriteCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Write\WriteLnCommand();
 // Info Commands
-$command[] = new DevCoding\Jss\Helper\Command\Info\HardwareCommand();
-$command[] = new DevCoding\Jss\Helper\Command\Info\OsCommand();
-$command[] = new DevCoding\Jss\Helper\Command\Info\AppCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Info\HardwareCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Info\OsCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Info\AppCommand();
 // Download & Install Commands
-$command[] = new DevCoding\Jss\Helper\Command\Download\GithubInstallCommand();
-$command[] = new DevCoding\Jss\Helper\Command\Download\PkgInstallCommand();
-$command[] = new DevCoding\Jss\Helper\Command\Download\DmgInstallCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Download\GithubInstallCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Download\PkgInstallCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Download\DmgInstallCommand();
 // Other Commands
-$command[] = new DevCoding\Jss\Helper\Command\PrepCommand();
-$app       = new Application('JHelper', 'v1.2.3');
+$command[] = new DevCoding\Jss\Easy\Command\PrepCommand();
+$app       = new Application('Jez', 'v1.5');
 $app->addCommands($command);
 $app->run();

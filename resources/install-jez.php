@@ -2,14 +2,19 @@
 
 <?php
 
+// This script can be used in a manually triggered policy to install
+// the JEZ executable.  The trigger for the policy should match the
+// name used in the dependency line of your scripts.  See the example
+// scripts for details.
+
 // region //////////////////////////////////////////////// Variables
 
 // Customized Variables
 $ghUser = 'deviscoding';
-$ghRepo = 'jss-helper';
-$ghFile = 'jhelper.phar';
+$ghRepo = 'jss-easy';
+$ghFile = 'jez.phar';
 $binDir = '/usr/local/bin';
-$name   = 'JHelper';
+$name   = 'Jez';
 
 // Derived Variables
 $fileETag    = sprintf('/tmp/curl/github.%s.%s.etag', $ghUser, $ghRepo);

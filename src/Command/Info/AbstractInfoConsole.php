@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command\Info;
+namespace DevCoding\Jss\Easy\Command\Info;
 
 use DevCoding\Mac\Command\AbstractMacConsole;
 

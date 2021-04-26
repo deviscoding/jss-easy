@@ -12,10 +12,10 @@
 
 ### region ############################################ Dependencies
 
-([ -z "$(which jhelper)" ] && jamf policy --trigger InstallJHelper) && ([ -z "$(which jhelper)" ] && echo "ERROR: JHelper Not Installed") && exit 1
+([ -z "$(which jez)" ] && jamf policy --trigger InstallJez) && ([ -z "$(which jez)" ] && echo "ERROR: JEZ Not Installed") && exit 1
 
-# shellcheck source=_jhelper.sh
-source "$(jhelper prep)"
+# shellcheck source=_jez.sh
+source "$(jez prep)"
 
 ### endregion ######################################### Dependencies
 
@@ -42,18 +42,18 @@ function getLatestVersion() {
 
 # Display Message
 echo ""
-$JH_MSG "Checking Current Version"
+$JMSG "Checking Current Version"
 # Get Current Version
 CURRENT=$(getLatestVersion)
 # Display Badge & Exit if No Version Given
-([ -n "${CURRENT}" ] && $JH_SUCCESS) || ($JH_ERROR && exit 1)
+([ -n "${CURRENT}" ] && $JSUCCESS) || ($JERROR && exit 1)
 
 # Set Variables
 APP_URL='https://dl.google.com/chrome/mac/stable/gcem/GoogleChrome.pkg'
 APP_PATH="/Applications/Google Chrome.app"
 
 # Install DMG
-if $JHELPER install:pkg "${APP_PATH}" "${APP_URL}" --target="${CURRENT}"; then
+if $JEZ install:pkg "${APP_PATH}" "${APP_URL}" --target="${CURRENT}"; then
   echo "" && exit 0
 else
   echo "" && exit 1

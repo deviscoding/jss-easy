@@ -1,5 +1,5 @@
 {
-    "name": "deviscoding/jss-helper",
+    "name": "deviscoding/jss-easy",
     "description": "CLI to assist with common JSS script functions.",
     "keywords": ["macos","osx","softwareupdate","apple","mac","macadmin","jamf","jss","mdm","cli"],
     "type": "project",
@@ -11,10 +11,10 @@
     ],
     "autoload": {
         "psr-4": {
-            "DevCoding\\Jss\\Helper\\": "src"
+            "DevCoding\\Jss\\Easy\\": "src"
         }
     },
-    "version": "1.2.3",
+    "version": "1.5",
     "require": {
         "php": "^7.0",
         "ext-json": "*",

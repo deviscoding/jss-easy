@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command\Info;
+namespace DevCoding\Jss\Easy\Command\Info;
 
 use DevCoding\Mac\Objects\MacUser;
 use Symfony\Component\Console\Input\InputArgument;
@@ -212,7 +212,10 @@ class OsCommand extends AbstractInfoConsole
     return null;
   }
 
-
+  /**
+   * @return string
+   * @throws \Exception
+   */
   protected function getOpenCommand()
   {
     $launchctl = $this->getBinaryPath('launchctl');

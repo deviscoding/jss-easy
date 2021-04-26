@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command\Info;
+namespace DevCoding\Jss\Easy\Command\Info;
 
 use DevCoding\Mac\Objects\AdobeApplication;
 use DevCoding\Mac\Objects\MacApplication;
@@ -238,7 +238,7 @@ class AppCommand extends AbstractInfoConsole
    * @param SemanticVersion $SemVer
    * @param string|null     $key
    *
-   * @return array|int|mixed|string|null
+   * @return array|int|string|null
    */
   protected function getVersion($SemVer, $key = null)
   {

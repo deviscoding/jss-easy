@@ -1,8 +1,8 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command\Download;
+namespace DevCoding\Jss\Easy\Command\Download;
 
-use DevCoding\Jss\Helper\Object\File\PkgFile;
+use DevCoding\Jss\Easy\Object\File\PkgFile;
 use DevCoding\Mac\Objects\MacApplication;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,7 +17,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
   }
 
   /**
-   * @return false|string
+   * @return string
    */
   protected function getDownloadExtension()
   {
@@ -91,7 +91,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
             $this->setTargetVersion($offer);
             $this->io()->msg('Is Update Needed?', 50);
             $retval = $this->isInstallNeeded($offer);
-            $badge  = self::CONTINUE === $retval ? 'yes' : 'no';
+            $badge  = self::CONTINUE == $retval ? 'yes' : 'no';
             $this->successbg($badge);
           }
           else

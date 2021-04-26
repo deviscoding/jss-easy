@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command\Write;
+namespace DevCoding\Jss\Easy\Command\Write;
 
 use DevCoding\Command\Base\IOHelper;
 use DevCoding\Mac\Command\AbstractMacConsole;

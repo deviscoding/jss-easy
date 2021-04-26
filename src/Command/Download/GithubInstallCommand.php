@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command\Download;
+namespace DevCoding\Jss\Easy\Command\Download;
 
 use DevCoding\Mac\Objects\SemanticVersion;
 use Symfony\Component\Console\Input\InputArgument;
@@ -48,12 +48,12 @@ class GithubInstallCommand extends AbstractDownloadConsole
     if ($src = $input->getArgument('source'))
     {
       $parts = explode('/', $src);
-      if (!$repo = $input->getOption('repo') && count($parts) > 1)
+      if ($input->getOption('repo') && count($parts) > 1)
       {
         $input->setOption('repo', $parts[0].$parts[1]);
       }
 
-      if (!$file = $input->getOption('file') && count($parts) > 2)
+      if ($input->getOption('file') && count($parts) > 2)
       {
         $input->setOption('file', $parts[2]);
       }

@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command\Download;
+namespace DevCoding\Jss\Easy\Command\Download;
 
 use DevCoding\Mac\Command\AbstractMacConsole;
 use DevCoding\Mac\Objects\MacApplication;
@@ -53,7 +53,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
   {
     if ($dest = $input->getArgument('destination'))
     {
-      if (!$installed = $input->getOption('installed'))
+      if (!$input->getOption('installed'))
       {
         if ($version = $this->getAppVersion($dest))
         {
@@ -63,6 +63,13 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     }
   }
 
+  /**
+   * @param InputInterface  $input
+   * @param OutputInterface $output
+   *
+   * @return int
+   * @noinspection PhpUnusedParameterInspection
+   */
   protected function executeUpgradeCheck(InputInterface $input, OutputInterface $output)
   {
     // Check Vs. Current if Provided
@@ -88,6 +95,13 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     return self::CONTINUE;
   }
 
+  /**
+   * @param InputInterface  $input
+   * @param OutputInterface $output
+   *
+   * @return int
+   * @noinspection PhpUnusedParameterInspection
+   */
   protected function executeOverwriteCheck(InputInterface $input, OutputInterface $output)
   {
     // Check if already installed unless overwriting
@@ -110,6 +124,13 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     return self::CONTINUE;
   }
 
+  /**
+   * @param InputInterface  $input
+   * @param OutputInterface $output
+   *
+   * @return int
+   * @noinspection PhpUnusedParameterInspection
+   */
   protected function executeDownload(InputInterface $input, OutputInterface $output)
   {
     $downFile = $this->getDownloadFile();
@@ -323,6 +344,13 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     return $this->_downloadFile;
   }
 
+  /**
+   * @param $url
+   * @param $file
+   *
+   * @noinspection DuplicatedCode
+   * @return bool
+   */
   protected function getDownload($url, $file)
   {
     $fp = fopen($file, 'w+');
@@ -349,6 +377,14 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     }
   }
 
+  /**
+   * @param      $url
+   * @param null $default
+   * @param null $etag
+   *
+   * @noinspection DuplicatedCode
+   * @return array
+   */
   protected function getUrl($url, $default = null, $etag = null)
   {
     $ch = curl_init($url);

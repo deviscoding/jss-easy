@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Helper\Command\Info;
+namespace DevCoding\Jss\Easy\Command\Info;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -421,7 +421,7 @@ class HardwareCommand extends AbstractInfoConsole
   /**
    * @param null $key
    *
-   * @return string[]|string|null
+   * @return array|string[]|null
    */
   protected function getInterfaces($key = null)
   {
