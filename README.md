@@ -1,4 +1,4 @@
-# JSS Helper
+# JSS Easy
 In developing scripts to work with Jamf Pro to manage a fleet of Mac computers, I found that similar functionality was often needed in each script.  As Jamf does not offer any sort of shared script library, this often led to repeating blocks of code and updating many scripts when changes were needed. The JSS Helper application was created to streamline scripts by providing assistance with three types of functionality:
 
 * Downloads & Installations
@@ -9,14 +9,14 @@ While it was designed for use with Jamf Pro, it may be used with other MDM syste
 
 ## Installation, Dependencies, and Compatibility
 
-For installation on client systems, it is recommended that you use a policy that runs a script, called via a trigger.  See the `/resources` directory for an example.  Once you have a policy created, you can use **jhelper** in your scripts by adding the following lines:
+For installation on client systems, it is recommended that you use a policy that runs a script, called via a trigger.  See the `/resources` directory for an example.  Once you have a policy created, you can use **jez** in your scripts by adding the following lines:
 
-    [ -n "$(which jhelper)" ] || jamf policy --trigger <POLICY TRIGGER HERE> || (echo "ERROR: JHelper Not Installed" && exit 1)
-    source "$(jhelper prep)"
+    ([ -z "$(which jez)" ] && jamf policy --trigger InstallJez) && ([ -z "$(which jez)" ] && echo "ERROR: JEZ Not Installed") && exit 1
+    source "$(jez prep)"
 
-At this time, JSS Helper has no dependencies when used in macOS High Sierra, Mojave, Catalina, or Big Sur.  
+At this time, JSS Easy has no dependencies when used in macOS High Sierra, Mojave, Catalina, or Big Sur.  
 
-For testing, simply download the `jhelper.phar` to your utility path, and rename it, for example `/usr/local/bin/jhelper`.
+For testing, simply download the `jez.phar` to your utility path, and rename it, for example `/usr/local/bin/jez`.
 
 ## Script Output Helpers
 
@@ -60,8 +60,8 @@ Downloads a file from a GitHub Repo's release, and installs it in a given path. 
 
 Example Usage:
 
-    jhelper install:github <destination> --repo=<repo> --file=<file_in_release>
-    jhelper install:github /usr/local/bin/jhelper --repo=deviscoding/jss-helper --file=jhelper.phar
+    jez install:github <destination> --repo=<repo> --file=<file_in_release>
+    jez install:github /usr/local/bin/jez --repo=deviscoding/jss-easy --file=jez.phar
 
 The permissions of downloaded files are set to be executable (0755).
 
@@ -70,7 +70,7 @@ Downloads a PKG file, installs, and confirms the target file or macOS app bundle
 
 Example usage:
 
-    jhelper install:pkg <destination> <url>
+    jez install:pkg <destination> <url>
 
 Existing files are not overwritten unless the one of the following is true:
 
@@ -85,7 +85,7 @@ Downloads a DMG file, mounts the DMG, then inspects the contents to determine wh
 
 Example usage:
 
-    jhelper install:dmg <destination> <url>
+    jez install:dmg <destination> <url>
 
 | DMG Contains | Action |
 |--|--|
