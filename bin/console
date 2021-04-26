@@ -22,6 +22,6 @@ $command[] = new DevCoding\Jss\Helper\Command\Download\PkgInstallCommand();
 $command[] = new DevCoding\Jss\Helper\Command\Download\DmgInstallCommand();
 // Other Commands
 $command[] = new DevCoding\Jss\Helper\Command\PrepCommand();
-$app       = new Application('JHelper', 'v1.2.2');
+$app       = new Application('JHelper', 'v1.2.3');
 $app->addCommands($command);
 $app->run();

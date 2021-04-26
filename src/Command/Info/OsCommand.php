@@ -2,6 +2,7 @@
 
 namespace DevCoding\Jss\Helper\Command\Info;
 
+use DevCoding\Mac\Objects\MacUser;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -134,7 +135,14 @@ class OsCommand extends AbstractInfoConsole
 
     if (self::USER === $key)
     {
-      return $this->getUser();
+      try
+      {
+        return MacUser::fromConsole();
+      }
+      catch (\Exception $e)
+      {
+        return null;
+      }
     }
     elseif (self::USERID === $key)
     {
