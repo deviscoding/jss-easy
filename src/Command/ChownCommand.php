@@ -1,8 +1,6 @@
 <?php
 
-
 namespace DevCoding\Jss\Easy\Command;
-
 
 use DevCoding\Mac\Command\AbstractMacConsole;
 use DevCoding\Mac\Objects\MacUser;
@@ -60,23 +58,26 @@ class ChownCommand extends AbstractMacConsole
         else
         {
           $this->io()->errorblk('Could not locate the user directory.');
+
           return self::EXIT_ERROR;
         }
       }
       catch (\Exception $e)
       {
         $this->io()->errorblk('Could not retrieve a User ID for the user.');
+
         return self::EXIT_ERROR;
       }
     }
     else
     {
       $this->io()->errorblk('The given file does not exist.');
+
       return self::EXIT_ERROR;
     }
 
-    $this->io()->msg('Setting Ownership',$width);
-    $setOwnerA = isset($own) && @chown($file,$own);
+    $this->io()->msg('Setting Ownership', $width);
+    $setOwnerA = isset($own) && @chown($file, $own);
     $setOwnerB = !$setOwnerA && isset($oId) && @chown($file, $oId);
     if (!$setOwnerA && !$setOwnerB)
     {
@@ -86,17 +87,17 @@ class ChownCommand extends AbstractMacConsole
       {
         if (!$oId)
         {
-          $this->io()->write('  Could not determine UID of owner of: ' . $uDir,null,null,OutputInterface::VERBOSITY_VERBOSE);
+          $this->io()->write('  Could not determine UID of owner of: '.$uDir, null, null, OutputInterface::VERBOSITY_VERBOSE);
         }
         else
         {
-          $this->io()->write('  Could not determine owner of: ' . $uDir,null,null,OutputInterface::VERBOSITY_VERBOSE);
-          $this->io()->write(sprintf('  Could not set owner of "%s" to "%s": ',$file,$oId),null,null,OutputInterface::VERBOSITY_VERBOSE);
+          $this->io()->write('  Could not determine owner of: '.$uDir, null, null, OutputInterface::VERBOSITY_VERBOSE);
+          $this->io()->write(sprintf('  Could not set owner of "%s" to "%s": ', $file, $oId), null, null, OutputInterface::VERBOSITY_VERBOSE);
         }
       }
       else
       {
-        $this->io()->write(sprintf('  Could not set owner of "%s" to "%s": ',$file,$own),null,null,OutputInterface::VERBOSITY_VERBOSE);
+        $this->io()->write(sprintf('  Could not set owner of "%s" to "%s": ', $file, $own), null, null, OutputInterface::VERBOSITY_VERBOSE);
       }
 
       return self::EXIT_ERROR;
@@ -106,8 +107,8 @@ class ChownCommand extends AbstractMacConsole
       $this->io()->successln('SUCCESS');
     }
 
-    $this->io()->msg('Setting Group',$width);
-    $setGroupA = isset($grp) && @chgrp($file,$grp);
+    $this->io()->msg('Setting Group', $width);
+    $setGroupA = isset($grp) && @chgrp($file, $grp);
     $setGroupB = !$setGroupA && isset($gId) && @chgrp($file, $gId);
     if (!$setGroupA && !$setGroupB)
     {
@@ -117,17 +118,17 @@ class ChownCommand extends AbstractMacConsole
       {
         if (!$gId)
         {
-          $this->io()->write('  Could not determine UID of group of: ' . $uDir,null,null,OutputInterface::VERBOSITY_VERBOSE);
+          $this->io()->write('  Could not determine UID of group of: '.$uDir, null, null, OutputInterface::VERBOSITY_VERBOSE);
         }
         else
         {
-          $this->io()->write('  Could not determine group of: ' . $uDir,null,null,OutputInterface::VERBOSITY_VERBOSE);
-          $this->io()->write(sprintf('  Could not set group of "%s" to "%s": ',$file,$gId),null,null,OutputInterface::VERBOSITY_VERBOSE);
+          $this->io()->write('  Could not determine group of: '.$uDir, null, null, OutputInterface::VERBOSITY_VERBOSE);
+          $this->io()->write(sprintf('  Could not set group of "%s" to "%s": ', $file, $gId), null, null, OutputInterface::VERBOSITY_VERBOSE);
         }
       }
       else
       {
-        $this->io()->write(sprintf('  Could not set group of "%s" to "%s": ',$file,$grp),null,null,OutputInterface::VERBOSITY_VERBOSE);
+        $this->io()->write(sprintf('  Could not set group of "%s" to "%s": ', $file, $grp), null, null, OutputInterface::VERBOSITY_VERBOSE);
       }
 
       return self::EXIT_ERROR;
