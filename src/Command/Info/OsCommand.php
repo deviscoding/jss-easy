@@ -26,6 +26,7 @@ class OsCommand extends AbstractInfoConsole
   const USER         = 'user';
   const USERID       = 'userid';
   const CONSOLE_OPEN = 'open';
+  const USER_DIR     = 'dir';
 
   protected function configure()
   {
@@ -131,9 +132,9 @@ class OsCommand extends AbstractInfoConsole
 
   protected function getConsole($key = null)
   {
-    $subKeys = [self::USER, self::USERID, self::CONSOLE_OPEN];
+    $subKeys = [self::NAME, self::USER, self::USER_DIR, self::USERID, self::CONSOLE_OPEN];
 
-    if (self::USER === $key || self::NAME === $key)
+    if (self::USER === $key || self::NAME === $key || self::USER_DIR === $key)
     {
       try
       {
@@ -151,6 +152,10 @@ class OsCommand extends AbstractInfoConsole
       elseif (self::NAME === $key)
       {
         return $MacUser->getRealName();
+      }
+      elseif (self::USER_DIR === $key)
+      {
+        return $MacUser->getDir();
       }
     }
     elseif (self::USERID === $key)
