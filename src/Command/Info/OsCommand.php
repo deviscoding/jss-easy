@@ -133,15 +133,24 @@ class OsCommand extends AbstractInfoConsole
   {
     $subKeys = [self::USER, self::USERID, self::CONSOLE_OPEN];
 
-    if (self::USER === $key)
+    if (self::USER === $key || self::NAME === $key)
     {
       try
       {
-        return MacUser::fromConsole();
+        $MacUser = MacUser::fromConsole();
       }
       catch (\Exception $e)
       {
         return null;
+      }
+
+      if (self::USER === $key)
+      {
+        return $MacUser->getUserName();
+      }
+      elseif (self::NAME === $key)
+      {
+        return $MacUser->getRealName();
       }
     }
     elseif (self::USERID === $key)
