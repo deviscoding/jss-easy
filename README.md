@@ -96,6 +96,16 @@ Example usage:
 
 After the installation, the volume is unmounted, and the DMG file is removed.
 
+## Ownership Command
+
+This command set the ownership of the given file to the same owner & group as a user's home directory.  Note that symlinks are ignored by this command.
+
+| Flag | Purpose |
+|--|--|  
+| --user | Specifies the user to set permissions from |
+| --console | Uses the user currently logged into the GUI console |
+| --recursive | Performs the command recursively |
+
 ## Can you add...
 If there is functionality that you constantly repeat in your MDM scripting, it may be useful to add to this application.  Open an issue with your use case, and an example of the code! Requests will be evaluated on a case-by-case basis.
 

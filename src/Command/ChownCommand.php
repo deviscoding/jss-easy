@@ -17,7 +17,8 @@ class ChownCommand extends AbstractMacConsole
 
     $this->setName('chown:user')
          ->addArgument('file', InputArgument::REQUIRED)
-         ->addOption('console', InputOption::VALUE_NONE)
+         ->addOption('console', null, InputOption::VALUE_NONE, 'Uses the user logged into the GUI.')
+         ->addOption('recursive', 'R', InputOption::VALUE_NONE, 'Performs the change recursively.')
          ->setDescription('Sets the owner and group of the given file to match the owner of the given user\'s home directory.')
     ;
   }
@@ -27,64 +28,63 @@ class ChownCommand extends AbstractMacConsole
     $file  = $this->io()->getArgument('file');
     $width = 50;
 
+    $this->io()->blankln()->msg('Checking for User', $width);
     if (!$this->io()->getOption('user') && !$this->io()->getOption('console'))
     {
-      $this->io()->errorblk('Either the --user option or the --console option must be used.');
-
       return self::EXIT_ERROR;
     }
 
-    if (file_exists($file))
+    if ($this->io()->getOption('console'))
     {
       try
       {
-        if (!$this->io()->getOption('console'))
-        {
-          $MacUser = $this->getUser();
-        }
-        else
-        {
-          $MacUser = MacUser::fromConsole(true);
-        }
-
-        $uDir = $MacUser->getDir();
-        if (is_dir($uDir))
-        {
-          $oId = @fileowner($uDir);
-          $own = $oId ? @posix_getpwuid($oId) : null;
-          $gId = @filegroup($uDir);
-          $grp = $gId ? @posix_getgrgid($gId) : null;
-        }
-        else
-        {
-          $this->io()->errorblk('Could not locate the user directory.');
-
-          return self::EXIT_ERROR;
-        }
+        $MacUser = MacUser::fromConsole(true);
       }
       catch (\Exception $e)
       {
-        $this->io()->errorblk('Could not retrieve a User ID for the user.');
-
-        return self::EXIT_ERROR;
+        $this->io()->errorln('[ERROR]');
+        $this->io()->write('  Could not determine the logged in user. Perhaps no one is logged in?', null, null, OutputInterface::VERBOSITY_VERBOSE);
+      }
+    }
+    elseif (!empty($this->_user))
+    {
+      try
+      {
+        $MacUser = MacUser::fromString($this->_user);
+      }
+      catch (\Exception $e)
+      {
+        $this->io()->errorln('[ERROR]');
+        $this->io()->write('  Invalid username format given. How about something alphanumeric?', null, null, OutputInterface::VERBOSITY_VERBOSE);
       }
     }
     else
     {
-      $this->io()->errorblk('The given file does not exist.');
-
-      return self::EXIT_ERROR;
+      $this->io()->error('[ERROR]');
+      $this->io()->write('  Either the --user option or the --console option must be used.');
     }
 
-    $this->io()->msg('Setting Ownership', $width);
-    $setOwnerA = isset($own) && @chown($file, $own);
-    $setOwnerB = !$setOwnerA && isset($oId) && @chown($file, $oId);
-    if (!$setOwnerA && !$setOwnerB)
+    if (!isset($MacUser) || !$MacUser instanceof MacUser)
     {
-      $this->io()->errorln('ERROR');
+      return self::EXIT_ERROR;
+    }
+    else
+    {
+      $this->io()->successln('[SUCCESS]');
+    }
 
-      if (!$own)
+    $this->io()->msg('Finding Owner & Group', 50);
+    $uDir = $MacUser->getDir();
+    if (is_dir($uDir))
+    {
+      $oId = @fileowner($uDir);
+      $own = $oId ? @posix_getpwuid($oId) : null;
+      $gId = @filegroup($uDir);
+      $grp = $gId ? @posix_getgrgid($gId) : null;
+
+      if (!$own || !$oId)
       {
+        $this->io()->errorln('[ERROR]');
         if (!$oId)
         {
           $this->io()->write('  Could not determine UID of owner of: '.$uDir, null, null, OutputInterface::VERBOSITY_VERBOSE);
@@ -92,53 +92,165 @@ class ChownCommand extends AbstractMacConsole
         else
         {
           $this->io()->write('  Could not determine owner of: '.$uDir, null, null, OutputInterface::VERBOSITY_VERBOSE);
-          $this->io()->write(sprintf('  Could not set owner of "%s" to "%s": ', $file, $oId), null, null, OutputInterface::VERBOSITY_VERBOSE);
         }
       }
       else
       {
-        $this->io()->write(sprintf('  Could not set owner of "%s" to "%s": ', $file, $own), null, null, OutputInterface::VERBOSITY_VERBOSE);
+        $this->io()->successln('[SUCCESS]');
       }
+    }
+    else
+    {
+      $this->io()->errorln('[ERROR]');
+      $this->io()->write('  Could not locate user directory.', null, null, OutputInterface::VERBOSITY_VERBOSE);
+
+      return self::EXIT_ERROR;
+    }
+
+    $type = $this->isRecursive() ? 'directory' : 'file';
+    $this->io()->msg('Verifying '.ucfirst($type), $width);
+    if (!file_exists($file))
+    {
+      $this->io()->errorln('[ERROR]');
+      $this->io()->write('  The given '.$type.' does not exist!');
 
       return self::EXIT_ERROR;
     }
     else
     {
-      $this->io()->successln('SUCCESS');
+      $this->io()->successln('[SUCCESS]');
     }
 
-    $this->io()->msg('Setting Group', $width);
-    $setGroupA = isset($grp) && @chgrp($file, $grp);
-    $setGroupB = !$setGroupA && isset($gId) && @chgrp($file, $gId);
-    if (!$setGroupA && !$setGroupB)
+    $owner = [$own, $oId];
+    $group = [$grp, $gId];
+    if ($this->isRecursive())
     {
-      $this->io()->errorln('ERROR');
-
-      if (!$grp)
+      $hasError = false;
+      $this->io()->msg('Setting Ownership Recursively', 50);
+      $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($file));
+      foreach ($iterator as $item)
       {
-        if (!$gId)
+        if ('..' !== substr($item, -2, 2) && '.' !== substr($item, -1, 1) )
         {
-          $this->io()->write('  Could not determine UID of group of: '.$uDir, null, null, OutputInterface::VERBOSITY_VERBOSE);
+          if (!$this->chown($item, $owner))
+          {
+            if (!$hasError)
+            {
+              $this->io()->errorln('[ERROR]');
+              $hasError = true;
+            }
+
+            $this->io()->writeln('  Owner Error: '.$item, null, null, OutputInterface::VERBOSITY_VERBOSE);
+          }
+
+          if (!$this->chgrp($item, $group))
+          {
+            if (!$hasError)
+            {
+              $this->io()->errorln('[ERROR]');
+              $hasError = true;
+            }
+
+            $this->io()->writeln('  Group Error: '.$item, null, null, OutputInterface::VERBOSITY_VERBOSE);
+          }
         }
-        else
-        {
-          $this->io()->write('  Could not determine group of: '.$uDir, null, null, OutputInterface::VERBOSITY_VERBOSE);
-          $this->io()->write(sprintf('  Could not set group of "%s" to "%s": ', $file, $gId), null, null, OutputInterface::VERBOSITY_VERBOSE);
-        }
+      }
+
+      if (!$hasError)
+      {
+        $this->io()->successln('[SUCCESS]');
       }
       else
       {
-        $this->io()->write(sprintf('  Could not set group of "%s" to "%s": ', $file, $grp), null, null, OutputInterface::VERBOSITY_VERBOSE);
-      }
+        $this->io()->blankln();
 
-      return self::EXIT_ERROR;
+        return self::EXIT_ERROR;
+      }
     }
     else
     {
-      $this->io()->successln('SUCCESS');
+      $this->io()->msg('Setting Ownership', 50);
+      $rvOwner = $this->chown($file, $owner);
+      $rvGroup = $this->chgrp($file, $group);
+
+      if (!$rvGroup || !$rvOwner)
+      {
+        $this->io()->errorln('[ERROR]')->blankln();
+
+        return self::EXIT_ERROR;
+      }
+      else
+      {
+        $this->io()->successln('[SUCCESS]');
+      }
     }
+
+    $this->io()->blankln();
 
     return self::EXIT_SUCCESS;
+  }
+
+  protected function chown($file, $users)
+  {
+    if ($this->isFile($file) || $this->isDir($file))
+    {
+      $users = is_array($users) ? $users : explode(',', $users);
+      foreach ($users as $user)
+      {
+        if (@chown($file, $user))
+        {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    return true;
+  }
+
+  protected function chgrp($file, $groups)
+  {
+    if ($this->isFile($file) || $this->isDir($file))
+    {
+      $groups = is_array($groups) ? $groups : explode(',', $groups);
+      foreach ($groups as $group)
+      {
+        if (@chgrp($file, $group))
+        {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    return true;
+  }
+
+  protected function isFile($file)
+  {
+    if (is_link($file) || is_dir($file) || !is_file($file))
+    {
+      return false;
+    }
+
+    return realpath($file) == $file;
+  }
+
+  protected function isDir($file)
+  {
+    if (is_link($file) || !is_dir($file))
+    {
+      return false;
+    }
+
+    return realpath($file) == $file;
+  }
+
+  protected function isRecursive()
+  {
+    return $this->io()->getOption('recursive');
   }
 
   protected function isAllowUserOption()
