@@ -14,12 +14,18 @@
             "DevCoding\\Jss\\Easy\\": "src"
         }
     },
-    "version": "1.5",
+    "version": "2.0",
     "require": {
-        "php": "^7.0",
+        "php": "^7.1",
         "ext-json": "*",
         "ext-curl": "*",
+        "ext-posix": "*",
         "symfony/process": "^4.4",
-        "deviscoding/mac-console": "^1.5"
+        "deviscoding/mac-console": "^1.7.1"
+    },
+    "config": {
+        "platform": {
+            "php": "7.1.33"
+        }
     }
 }
