@@ -25,7 +25,7 @@ class ChownCommand extends AbstractMacConsole
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $file  = $this->io()->getArgument('file');
+    $file = realpath($this->io()->getArgument('file'));
     $width = 50;
 
     $this->io()->blankln()->msg('Checking for User', $width);
@@ -130,8 +130,13 @@ class ChownCommand extends AbstractMacConsole
       $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($file));
       foreach ($iterator as $item)
       {
-        if ('..' !== substr($item, -2, 2) && '.' !== substr($item, -1, 1) )
+        if ('..' !== substr($item, -2, 2) )
         {
+          if ('/.' === substr($item, -2, 2))
+          {
+            $item = substr($item, 0, -1);
+          }
+
           if (!$this->chown($item, $owner))
           {
             if (!$hasError)

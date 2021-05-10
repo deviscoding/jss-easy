@@ -49,7 +49,7 @@ CURRENT=$(getLatestVersion)
 ([ -n "${CURRENT}" ] && $JSUCCESS) || ($JERROR && exit 1)
 
 # Set Variables
-APP_URL='https://dl.google.com/chrome/mac/stable/gcem/GoogleChrome.pkg'
+APP_URL='https://dl.google.com/chrome/mac/universal/stable/gcem/GoogleChrome.pkg'
 APP_PATH="/Applications/Google Chrome.app"
 
 # Install DMG
