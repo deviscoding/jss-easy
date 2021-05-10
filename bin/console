@@ -23,6 +23,6 @@ $command[] = new DevCoding\Jss\Easy\Command\Download\DmgInstallCommand();
 // Other Commands
 $command[] = new DevCoding\Jss\Easy\Command\ChownCommand();
 $command[] = new DevCoding\Jss\Easy\Command\PrepCommand();
-$app       = new Application('Jez', 'v2.1');
+$app       = new Application('Jez', 'v2.1.1');
 $app->addCommands($command);
 $app->run();
