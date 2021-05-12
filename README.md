@@ -100,11 +100,29 @@ After the installation, the volume is unmounted, and the DMG file is removed.
 
 This command set the ownership of the given file to the same owner & group as a user's home directory.  Note that symlinks are ignored by this command.
 
+Example usage:
+
+    jez chown:user /Users/bobm/Library/Preferences/com.apple.caramel.plist --user bobm
+
 | Flag | Purpose |
 |--|--|  
 | --user | Specifies the user to set permissions from |
 | --console | Uses the user currently logged into the GUI console |
 | --recursive | Performs the command recursively |
+
+#### Menu Command
+This command will add a menu to a user's menubar, and works with any of the .menu bundles located in
+
+    /System/Library/CoreServices/Menu Extras
+
+Example Usage:
+
+    jez menu:add VPN --user kevins
+
+|Flag  | Purpose |  
+|--|--|  
+| --user | The user to add the menu for.  This defaults to the current console user. |
+
 
 ## Can you add...
 If there is functionality that you constantly repeat in your MDM scripting, it may be useful to add to this application.  Open an issue with your use case, and an example of the code! Requests will be evaluated on a case-by-case basis.
