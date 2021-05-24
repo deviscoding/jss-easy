@@ -15,7 +15,7 @@ class PrepCommand extends AbstractConsole
     $this
         ->setName('prep')
         ->setDescription('Creates a source file inclusion in your JSS scripts, allowing you to access various JEZ functions through bash variables.')
-        ->addArgument('path', InputArgument::OPTIONAL, 'Path to install functions.', '/usr/local/sbin/functions/')
+        ->addArgument('path', InputArgument::OPTIONAL, 'Path to install functions.', '/usr/local/sbin/functions')
         ->addOption('width', null, InputOption::VALUE_REQUIRED, 'The default width to use with the $JEZ_MSG variable', 50)
     ;
   }
