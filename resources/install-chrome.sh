@@ -14,7 +14,7 @@
 
 ([ -z "$(which jez)" ] && jamf policy --trigger InstallJez) && ([ -z "$(which jez)" ] && echo "ERROR: JEZ Not Installed") && exit 1
 
-# shellcheck source=_jez.sh
+# shellcheck source=_JEZ.sh
 source "$(jez prep)"
 
 ### endregion ######################################### Dependencies
