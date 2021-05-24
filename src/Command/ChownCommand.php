@@ -134,7 +134,7 @@ class ChownCommand extends AbstractMacConsole
         {
           if ('/.' === substr($item, -2, 2))
           {
-            $item = substr($item, 0, -1);
+            $item = substr($item, 0, -2);
           }
 
           if (!$this->chown($item, $owner))
