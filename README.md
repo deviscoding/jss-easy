@@ -110,7 +110,7 @@ Example usage:
 | --console | Uses the user currently logged into the GUI console |
 | --recursive | Performs the command recursively |
 
-#### Menu Command
+## Menu Command
 This command will add a menu to a user's menubar, and works with any of the .menu bundles located in
 
     /System/Library/CoreServices/Menu Extras
