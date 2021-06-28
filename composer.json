@@ -14,7 +14,7 @@
             "DevCoding\\Jss\\Easy\\": "src"
         }
     },
-    "version": "2.2",
+    "version": "2.2.1",
     "require": {
         "php": "^7.1",
         "ext-json": "*",

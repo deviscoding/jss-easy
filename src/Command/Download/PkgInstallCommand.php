@@ -31,10 +31,6 @@ class PkgInstallCommand extends AbstractDownloadConsole
     $checks = $this->executeUpgradeCheck($input, $output);
     if (self::CONTINUE !== $checks)
     {
-      return $checks;
-    }
-    else
-    {
       // Check if we should overwrite
       $checks = $this->executeOverwriteCheck($input, $output);
       if (self::CONTINUE !== $checks)
