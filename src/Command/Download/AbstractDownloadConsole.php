@@ -480,9 +480,9 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
 
   protected function getTempFile($ext)
   {
-    $basename = pathinfo($this->getDestination(), PATHINFO_BASENAME);
+    $basename = pathinfo($this->getDestination(), PATHINFO_FILENAME);
 
-    return tempnam($this->getCacheDir(), $basename).'.'.$ext;
+    return tempnam($this->getCacheDir(), $basename.'-').'.'.$ext;
   }
 
   protected function installPkgFile($pkgFile, &$error)
