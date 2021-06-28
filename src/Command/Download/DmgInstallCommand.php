@@ -7,7 +7,6 @@ use DevCoding\Mac\Objects\MacApplication;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 class DmgInstallCommand extends AbstractDownloadConsole
 {
@@ -311,7 +310,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
     if (is_dir($mount['volume']))
     {
       $cmd     = sprintf('/usr/bin/hdiutil detach "%s"', $mount['dev']);
-      $Process = Process::fromShellCommandline($cmd);
+      $Process = $this->getProcessFromShellCommandLine($cmd);
       $Process->run();
 
       if (!$Process->isSuccessful())
@@ -344,7 +343,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
   protected function mount($dmgFile, &$error)
   {
     $cmd     = sprintf('/usr/bin/hdiutil attach "%s" -nobrowse', $dmgFile);
-    $Process = Process::fromShellCommandline($cmd);
+    $Process = $this->getProcessFromShellCommandLine($cmd);
     $Process->run();
 
     if (!$Process->isSuccessful())

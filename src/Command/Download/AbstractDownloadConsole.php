@@ -39,6 +39,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
         ->addArgument('destination', InputArgument::REQUIRED)
         ->addOption('installed', null, InputOption::VALUE_REQUIRED)
         ->addOption('overwrite', null, InputOption::VALUE_NONE)
+        ->addOption('timeout', null, InputOption::VALUE_REQUIRED, 'Timeout for installation processes.', 900)
     ;
 
     if ($this->isTargetOption())
@@ -488,7 +489,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
   protected function installPkgFile($pkgFile, &$error)
   {
     $cmd     = sprintf('installer -allowUntrusted -pkg "%s" -target / 1>/dev/null', $pkgFile);
-    $Process = Process::fromShellCommandline($cmd);
+    $Process = $this->getProcessFromShellCommandLine($cmd);
     $Process->run();
 
     if (!$Process->isSuccessful())
@@ -519,7 +520,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
   protected function installFile($file, &$error)
   {
     $cmd     = sprintf('ditto -rsrc "%s" "%s"', $file, $this->getDestination());
-    $Process = Process::fromShellCommandline($cmd);
+    $Process = $this->getProcessFromShellCommandLine($cmd);
     $Process->run();
 
     if (!$Process->isSuccessful())
@@ -535,4 +536,24 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
 
     return true;
   }
+
+  /**
+   * Returns a process object by using Process::fromShellCommandline, then setting the timeout according to the input
+   * option or it's default.
+   *
+   * @param string $cmd
+   *
+   * @return Process
+   */
+  protected function getProcessFromShellCommandLine($cmd)
+  {
+    $Process = Process::fromShellCommandline($cmd);
+    if ($timeout = $this->io()->getOption('timeout'))
+    {
+      $Process->setTimeout($timeout)->setIdleTimeout($timeout);
+    }
+
+    return $Process;
+  }
+
 }
