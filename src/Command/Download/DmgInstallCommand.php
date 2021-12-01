@@ -119,7 +119,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
     {
       if ($File instanceof MacApplication)
       {
-        $this->io()->msg('Installing APP Bundle');
+        $this->io()->msg('Installing APP Bundle', 50);
         if (!$this->installAppFile($File, $errors))
         {
           $retval = self::EXIT_ERROR;
