@@ -235,13 +235,13 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
    */
   protected function getInstalledVersion()
   {
-    if ($this->isAppBundle($this->getDestination()))
-    {
-      return (new MacApplication($this->getDestination()))->getShortVersion();
-    }
-    elseif ($ver = $this->io()->getOption('installed'))
+    if ($ver = $this->io()->getOption('installed'))
     {
       return new SemanticVersion($ver);
+    }
+    elseif ($this->isAppBundle($this->getDestination()))
+    {
+      return (new MacApplication($this->getDestination()))->getShortVersion();
     }
 
     return null;
