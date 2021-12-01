@@ -14,6 +14,8 @@
             "DevCoding\\Jss\\Easy\\": "src"
         }
     },
+    "prefer-stable": true,
+    "minimum-stability": "dev",
     "version": "2.4",
     "require": {
         "php": "^7.1",
@@ -21,7 +23,7 @@
         "ext-curl": "*",
         "ext-posix": "*",
         "symfony/process": "^4.4",
-        "deviscoding/mac-console": "^1.7.1"
+        "deviscoding/mac-console": "^1.8.1"
     },
     "config": {
         "platform": {
