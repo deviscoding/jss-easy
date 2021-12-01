@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class ZipInstallCommand
  *
  * @author  AMJones <am@jonesiscoding.com>
- * @license https://github.com/deviscoding/objection/blob/main/LICENSE
+ * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  * @package DevCoding\Jss\Easy\Command\Download
  */
 class ZipInstallCommand extends AbstractDownloadConsole
