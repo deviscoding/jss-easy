@@ -79,13 +79,6 @@ class Docker extends BaseInstaller
     return $this->version;
   }
 
-  protected function getUserAgent()
-  {
-    $ver = str_replace('.', '_', (string) $this->getDevice()->getOs()->getVersion());
-
-    return sprintf('Mozilla/5.0 (Macintosh; Intel Mac OS X %s) AppleWebKit/535.6.2 (KHTML, like Gecko) Version/5.2 Safari/535.6.2', $ver);
-  }
-
   protected function getReleaseNotes()
   {
     $url = 'https://docs.docker.com/desktop/mac/release-notes/';
