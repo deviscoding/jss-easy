@@ -2,7 +2,6 @@
 
 namespace DevCoding\Jss\Easy\Object\Installer;
 
-use DevCoding\Command\Base\Traits\ShellTrait;
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -15,8 +14,6 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class Docker extends BaseInstaller
 {
-  use ShellTrait;
-
   /** @var string */
   protected $version;
 
@@ -32,14 +29,9 @@ class Docker extends BaseInstaller
 
   public function getDownloadUrl()
   {
-    if ($this->getDevice()->isAppleChip())
-    {
-      return 'https://desktop.docker.com/mac/stable/arm64/Docker.dmg';
-    }
-    else
-    {
-      return 'https://desktop.docker.com/mac/stable/amd64/Docker.dmg';
-    }
+    $arch = $this->isAppleSilicon() ? 'arm64' : 'amd64';
+
+    return sprintf('https://desktop.docker.com/mac/stable/%s/Docker.dmg', $arch);
   }
 
   public function getDestinationUrl()
@@ -52,6 +44,12 @@ class Docker extends BaseInstaller
     return $this->getInstallerTypeFromUrl($this->getDownloadUrl());
   }
 
+  /**
+   * Retrieves the current version from the Docker Desktop Release Notes page.
+   *
+   * @noinspection PhpUnusedParameterInspection
+   * @return string
+   */
   public function getCurrentVersion()
   {
     if (!isset($this->version))
@@ -62,6 +60,7 @@ class Docker extends BaseInstaller
         $crawler = $crawler->filter('.col-content > section');
         if ($crawler->count() > 0)
         {
+
           $crawler = $crawler->filter('h2' )->reduce(function (Crawler $node, $i) {
             $id = $node->attr('id');
 
@@ -79,6 +78,11 @@ class Docker extends BaseInstaller
     return $this->version;
   }
 
+  /**
+   * Returns the HTML contents of the Docker Desktop Release notes page.
+   *
+   * @return string|null
+   */
   protected function getReleaseNotes()
   {
     $url = 'https://docs.docker.com/desktop/mac/release-notes/';

@@ -22,14 +22,9 @@ class JetbrainsPhpStorm extends BaseInstaller
 
   public function getDownloadUrl()
   {
-    if ($arch = $this->getDevice()->getCpuType())
-    {
-      $dist = 'apple' === $arch ? 'macM1' : 'mac';
+    $dist = $this->isAppleSilicon() ? 'macM1' : 'mac';
 
-      return sprintf(static::BASEURL, 'PS', $dist);
-    }
-
-    return null;
+    return sprintf(static::BASEURL, 'PS', $dist);
   }
 
   public function getName()

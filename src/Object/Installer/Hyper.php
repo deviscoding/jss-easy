@@ -18,16 +18,10 @@ class Hyper extends GitHubInstaller
 
   protected function getFile()
   {
+    $arch = $this->isAppleSilicon() ? 'arm64' : 'x64';
     $base = 'Hyper-%s-mac-%s.dmg';
-    if ($arch = $this->getDevice()->getCpuType())
-    {
-      if ('apple' === $arch)
-      {
-        return sprintf($base, $this->getCurrentVersion(), 'arm64');
-      }
-    }
 
-    return sprintf($base, $this->getCurrentVersion(), 'x64');
+    return sprintf($base, $this->getCurrentVersion(), $arch);
   }
 
   public function getName()

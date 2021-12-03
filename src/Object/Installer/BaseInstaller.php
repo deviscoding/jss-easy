@@ -75,6 +75,14 @@ abstract class BaseInstaller
     return null;
   }
 
+  /**
+   * @return bool
+   */
+  protected function isAppleSilicon()
+  {
+    return $this->getDevice()->isAppleChip();
+  }
+
   abstract public function getName();
 
   abstract public function getPath();
