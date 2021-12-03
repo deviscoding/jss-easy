@@ -10,6 +10,7 @@ use DevCoding\Mac\Objects\MacDevice;
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
+ *
  * @package DevCoding\Jss\Easy\Object\Installer
  */
 abstract class BaseInstaller
@@ -38,7 +39,12 @@ abstract class BaseInstaller
    */
   public function getInstalledVersion()
   {
-    return (new MacApplication($this->getPath()))->getShortVersion()->__toString();
+    if (file_exists($this->getPath().'/Contents/Info.plist'))
+    {
+      return (new MacApplication($this->getPath()))->getShortVersion()->__toString();
+    }
+
+    return null;
   }
 
   protected function getInstallerTypeFromUrl($url)
@@ -53,7 +59,7 @@ abstract class BaseInstaller
 
   protected function getUserAgent()
   {
-    $ver = str_replace('.', '_', (string)$this->getDevice()->getOs()->getVersion());
+    $ver = str_replace('.', '_', (string) $this->getDevice()->getOs()->getVersion());
 
     return sprintf('Mozilla/5.0 (Macintosh; Intel Mac OS X %s) AppleWebKit/535.6.2 (KHTML, like Gecko) Version/5.2 Safari/535.6.2',
         $ver);
