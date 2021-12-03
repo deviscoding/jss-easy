@@ -3,6 +3,7 @@
 namespace DevCoding\Jss\Easy\Object\Installer;
 
 use DevCoding\Command\Base\Traits\ShellTrait;
+use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use DevCoding\Mac\Objects\MacApplication;
 
 /**
@@ -59,7 +60,7 @@ class JetbrainsPhpStorm extends BaseInstaller
   {
     if (empty($this->destination))
     {
-      $this->destination = $this->getShellExec(sprintf('curl -fsIL "%s" | grep -i "location" | tail -1', $this->getDownloadUrl()));
+      $this->destination = (new DownloadHelper())->getRedirectUrl($this->getDownloadUrl(), $this->getUserAgent());
     }
 
     return $this->destination;
