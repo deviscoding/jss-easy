@@ -3,6 +3,7 @@
 namespace DevCoding\Jss\Easy\Object\Installer;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
+use DevCoding\Mac\Objects\MacApplication;
 
 /**
  * Installer configuration class for Google Chrome
@@ -35,6 +36,16 @@ class GoogleChrome extends BaseInstaller
   public function getInstallerType()
   {
     return $this->getInstallerTypeFromUrl($this->getDownloadUrl());
+  }
+
+  /**
+   * Override to provide the raw version number, direct from CFShortVersionString
+   *
+   * @return string|null
+   */
+  public function getInstalledVersion()
+  {
+    return (new MacApplication($this->getPath()))->getShortVersion()->getRaw();
   }
 
   public function getCurrentVersion()
