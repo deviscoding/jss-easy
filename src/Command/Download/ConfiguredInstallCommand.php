@@ -4,6 +4,7 @@ namespace DevCoding\Jss\Easy\Command\Download;
 
 use DevCoding\Jss\Easy\Object\Installer\BaseInstaller;
 use DevCoding\Mac\Command\AbstractMacConsole;
+use DevCoding\Mac\Objects\SemanticVersion;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -43,6 +44,11 @@ class ConfiguredInstallCommand extends AbstractMacConsole
       $version = $Installer->getCurrentVersion();
       if (false === $version || $version)
       {
+        if ($version)
+        {
+          $version = (new SemanticVersion($version))->__toString();
+        }
+
         $this->successbg($version ?: 'SUCCESS');
 
         if ($command = $this->getCommand($Installer))
