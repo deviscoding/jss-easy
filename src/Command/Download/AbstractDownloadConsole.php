@@ -82,14 +82,14 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
 
       if ($installed->gte($current))
       {
-        $this->successbg('no');
+        $this->successbg($installed);
         $this->io()->blankln();
 
         return self::EXIT_SUCCESS;
       }
       else
       {
-        $this->successbg('yes');
+        $this->successbg($installed);
       }
     }
 
@@ -483,7 +483,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
   {
     $basename = pathinfo($this->getDestination(), PATHINFO_FILENAME);
 
-    return tempnam($this->getCacheDir(), $basename.'-').'.'.$ext;
+    return @tempnam($this->getCacheDir(), $basename.'-').'.'.$ext;
   }
 
   protected function installPkgFile($pkgFile, &$error)
