@@ -2,6 +2,7 @@
 
 namespace DevCoding\Jss\Easy\Command\Download;
 
+use DevCoding\Helper\ClassHelper;
 use DevCoding\Jss\Easy\Object\Installer\BaseInstaller;
 use DevCoding\Mac\Command\AbstractMacConsole;
 use DevCoding\Mac\Objects\SemanticVersion;
@@ -14,6 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
+ *
  * @package DevCoding\Jss\Easy\Command\Download
  */
 class ConfiguredInstallCommand extends AbstractMacConsole
@@ -37,7 +39,8 @@ class ConfiguredInstallCommand extends AbstractMacConsole
     $name = $this->io()->getArgument('name');
 
     $this->io()->msg('Retrieving Configuration', 50);
-    if ($Installer = $this->getInstaller($name))
+    $alternates = [];
+    if ($Installer = $this->getInstaller($name, $alternates))
     {
       $this->successbg('SUCCESS');
       $this->io()->msg('Finding Current Version', 50);
@@ -65,6 +68,19 @@ class ConfiguredInstallCommand extends AbstractMacConsole
 
         return self::EXIT_ERROR;
       }
+    }
+    else
+    {
+      $this->errorbg('FAILED');
+
+      $msg = 'Could not find a configuration for "'.$name.'".';
+
+      if (!empty($alternates))
+      {
+        $msg .= ' Did you mean: '.implode(', ', $alternates).'?';
+      }
+
+      $this->io()->errorblk($msg);
     }
 
     return self::EXIT_ERROR;
@@ -125,16 +141,23 @@ class ConfiguredInstallCommand extends AbstractMacConsole
   }
 
   /**
-   * @param $name
+   * @param string $name
    *
    * @return BaseInstaller|null
+   * @throws \ReflectionException
    */
-  protected function getInstaller($name)
+  protected function getInstaller($name, &$alternates)
   {
-    return ($fqcn = $this->getClass($name)) ? new $fqcn($this->getDevice()) : null;
+    return ($fqcn = $this->getClass($name, $alternates)) ? new $fqcn($this->getDevice()) : null;
   }
 
-  protected function getClass($name)
+  /**
+   * @param string $name
+   *
+   * @return string|null
+   * @throws \ReflectionException
+   */
+  protected function getClass($name, &$alternates = [])
   {
     $class = str_replace([' ', '_', '-'], '', ucwords($name, ' _-'));
 
@@ -142,7 +165,26 @@ class ConfiguredInstallCommand extends AbstractMacConsole
     $nspace = $rClass->getNamespaceName();
     $fqcn   = $nspace.'\\'.$class;
 
-    return $fqcn;
+    if (class_exists($fqcn))
+    {
+      return $fqcn;
+    }
+
+    if ($configured = ClassHelper::get()->getClassesInNamespace($nspace))
+    {
+      foreach ($configured as $config)
+      {
+        $rClass = new \ReflectionClass($config);
+        $cClass = $rClass->getShortName();
+        $lev    = levenshtein($class, $cClass);
+        if ($lev <= \strlen($class) / 3 || false !== strpos($cClass, $class))
+        {
+          $alternates[] = strtolower(preg_replace('~(?<=\\w)([A-Z])~', '-$1', $cClass));
+        }
+      }
+    }
+
+    return null;
   }
 
   protected function successbg($msg)
