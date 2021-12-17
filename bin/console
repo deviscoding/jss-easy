@@ -25,8 +25,10 @@ $command[] = new DevCoding\Jss\Easy\Command\Download\ConfiguredInstallCommand();
 // Preference Commands
 $command[] = new DevCoding\Jss\Easy\Command\ChownCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Preferences\MenuAddCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Preferences\CC\BackupCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Preferences\CC\TransferCommand();
 // Other Commands
 $command[] = new DevCoding\Jss\Easy\Command\PrepCommand();
-$app       = new Application('Jez', 'v3.1.6');
+$app       = new Application('Jez', 'v3.2');
 $app->addCommands($command);
 $app->run();

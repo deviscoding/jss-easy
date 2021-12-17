@@ -125,6 +125,30 @@ Example usage:
 
 After the installation, the volume is unmounted, and the DMG file is removed.
 
+## Adobe Applications Functionality
+
+The Adobe commands can back up preferences for Adobe Creative Cloud applications, or transfer preferences between different _years_ of the same Creative Cloud application.
+
+For all of these commands, the application name should be provided in lowercase, using a dash as a separator, for example: _after-effects_.
+
+#### adobe:backup _app_ _year_
+Backs up the preferences of an Adobe Creative Cloud application.  While the application does not need to be installed, it can be helpful.  Preferences are backed up to the path below, and stored in time/date stamped zip files.
+
+`/Users/<user>/Library/Preferences/Prefer/CC/<app>/<year>`
+
+The year is optional for the applications that do not use it, such as XD, Dimension, and Lightroom.
+
+#### adobe:transfer _app_
+Copies preferences from one _year_ of a Creative Cloud application to another _year_.  This is intended for situations in which more than one _year_ of an application are installed side-by-side, such as both Photoshop 2020 and 2021.
+
+_It should be noted that this is purely a  "copy" process; no changes are made to the files,  and no attempt is made to migrate changed or deprecated preferences.  This has worked well in testing, but may not work with all future preferences or applications.  As such, a backup of the existing preferences is always made during the copy process_.
+
+|Flags  | Purpose |  
+|--|--|  
+| from | The source year, IE - 2019 |  
+| to | The destination year, IE - 2020 |  
+| user | This defaults to the current user, which makes it important to include this flag when running this tool as root. |
+
 ## Ownership Command
 
 This command set the ownership of the given file to the same owner & group as a user's home directory.  Note that symlinks are ignored by this command.
