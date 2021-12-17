@@ -12,7 +12,7 @@ use DevCoding\Mac\Objects\MacApplication;
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class ITerm2 extends BaseInstaller
+class Iterm2 extends BaseInstaller
 {
   use ShellTrait;
 

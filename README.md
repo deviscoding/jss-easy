@@ -55,6 +55,35 @@ All commands can take a `--json` flag which will change the results to JSON.  Ad
 ## Install Commands
 These commands help with the download and installation of executables and applications.  Which command is the most useful may depend on the source and format of the download.
 
+### Configured Installer
+Installs a pre-configured application, using the latest version available.  Only a limited number of applications are
+available using this command, as detailed below.  Application names and details remain subject to the license of the
+author, license issuing party, or copyright holder as is appropriate.
+
+For most applications, nothing is downloaded if the _current_ version of the application matches the _installed_ version.  Applications where the _current_ version cannot be obtained from the application's website or other public source are the exception.
+
+| Application | Installer Slug |
+|--|--|
+| Adobe Reader DC | adobe-reader-dc |
+| Basecamp3 | basecamp |
+| Docker Desktop for Mac | docker |
+| Mozilla Firefox | firefox |
+| Mozilla Firefox Developer Edition | firefox-developer |
+| Google Chrome | google-chrome |
+| Hyper | hyper |
+| iTerm2 | iterm2 |
+| Jamf PPPC Utility | jamf-pppc-utility |
+| Jetbrains PhpStorm | jetbrains-php-storm |
+| Microsoft OneDrive | microsoft-one-drive |
+| Microsoft Teams | microsoft-teams |
+| OpenVPN Connect | open-vpn-connect | 
+| Platypus | platypus |
+| Rectangle | rectangle |
+| Slack | slack |
+| Sourcetree | sourcetree |
+| Thunderbird | thunderbird |
+| Visual Studio Code | visual-studio-code |
+
 ### Github Installer
 Downloads a file from a GitHub Repo's release, and installs it in a given path.  Existing files are not overwritten unless the `--overwrite` flag or the `--installed` flag are given. When provided with the version currently installed using the `--installed` flag, this command will check the latest release to determine if an update is needed.
 

@@ -1,7 +1,7 @@
 {
     "name": "deviscoding/jss-easy",
-    "description": "CLI to assist with common JSS script functions.",
-    "keywords": ["macos","osx","softwareupdate","apple","mac","macadmin","jamf","jss","mdm","cli"],
+    "description": "CLI application to assist with common MDM tasks and script functions.",
+    "keywords": ["macos","osx","softwareupdate","apple","mac","macadmin","jamf","jss","mdm","cli", "installer"],
     "type": "project",
     "authors": [
         {
@@ -16,7 +16,7 @@
     },
     "prefer-stable": true,
     "minimum-stability": "dev",
-    "version": "3.1.6",
+    "version": "3.1.7",
     "require": {
         "php": "^7.1",
         "ext-json": "*",
