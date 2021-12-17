@@ -60,7 +60,13 @@ Installs a pre-configured application, using the latest version available.  Only
 available using this command, as detailed below.  Application names and details remain subject to the license of the
 author, license issuing party, or copyright holder as is appropriate.
 
+This command should only be used for applications where you do not need to control the version of the application that is installed.
+
 For most applications, nothing is downloaded if the _current_ version of the application matches the _installed_ version.  Applications where the _current_ version cannot be obtained from the application's website or other public source are the exception.
+
+Example usage:
+
+    jez install:configured <slug>
 
 | Application | Installer Slug |
 |--|--|
@@ -134,7 +140,7 @@ For all of these commands, the application name should be provided in lowercase,
 #### adobe:backup _app_ _year_
 Backs up the preferences of an Adobe Creative Cloud application.  While the application does not need to be installed, it can be helpful.  Preferences are backed up to the path below, and stored in time/date stamped zip files.
 
-`/Users/<user>/Library/Preferences/Prefer/CC/<app>/<year>`
+`/Users/<user>/Library/Preferences/MDM Easy/CC/<app>/<year>`
 
 The year is optional for the applications that do not use it, such as XD, Dimension, and Lightroom.
 

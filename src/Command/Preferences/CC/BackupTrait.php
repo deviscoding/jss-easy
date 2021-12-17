@@ -46,11 +46,11 @@ trait BackupTrait
   {
     if ($year = $app->getYear())
     {
-      return sprintf('%s/Preferences/MDM Helper/Adobe/%s/%s', $this->getUser()->getLibrary(), $app->getSlug(), $year);
+      return sprintf('%s/Preferences/MDM Easy/Adobe/%s/%s', $this->getUser()->getLibrary(), $app->getSlug(), $year);
     }
     else
     {
-      return sprintf('%s/Preferences/MDM Helper/Adobe/%s', $this->getUser()->getLibrary(), $app->getSlug());
+      return sprintf('%s/Preferences/MDM Easy/Adobe/%s', $this->getUser()->getLibrary(), $app->getSlug());
     }
   }
 
