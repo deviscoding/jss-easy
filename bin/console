@@ -29,6 +29,6 @@ $command[] = new DevCoding\Jss\Easy\Command\Preferences\CC\BackupCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Preferences\CC\TransferCommand();
 // Other Commands
 $command[] = new DevCoding\Jss\Easy\Command\PrepCommand();
-$app       = new Application('Jez', 'v3.2');
+$app       = new Application('Jez', 'v3.2.1');
 $app->addCommands($command);
 $app->run();

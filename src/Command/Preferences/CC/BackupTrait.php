@@ -2,7 +2,6 @@
 
 namespace DevCoding\Jss\Easy\Command\Preferences\CC;
 
-use DevCoding\Jss\Easy\Object\CC\AdobePreferences;
 use DevCoding\Mac\Objects\AdobeApplication;
 use DevCoding\Mac\Objects\MacUser;
 
@@ -78,7 +77,7 @@ trait BackupTrait
     }
 
     $userDir = $this->getUser()->getDir();
-    if ($prefDirs = (new AdobePreferences($ccApp))->getPaths())
+    if ($prefDirs = $ccApp->getPreferencePaths())
     {
       foreach ($prefDirs as $preference)
       {

@@ -2,7 +2,6 @@
 
 namespace DevCoding\Jss\Easy\Command\Preferences\CC;
 
-use DevCoding\Jss\Easy\Object\CC\AdobePreferences;
 use DevCoding\Mac\Command\AbstractMacConsole;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -131,13 +130,34 @@ class TransferCommand extends AbstractMacConsole
     $app  = $this->io()->getArgument('application');
     $from = $this->io()->getOption('from');
     $to   = $this->io()->getOption('to');
-    $src  = $this->getAdobeApplication($app, $from);
-    $dst  = $this->getAdobeApplication($app, $to);
-    $this->io()->blankln();
+
+    $this->io()->msg('Locating Source Application',50);
+    if ($src = $this->getAdobeApplication($app, $from))
+    {
+      $this->io()->successln('[DONE]');
+    }
+    else
+    {
+      $this->io()->errorln('[ERROR]');
+
+      return self::EXIT_ERROR;
+    }
+
+    $this->io()->msg('Locating Destination Application', 50);
+    if ($dst = $this->getAdobeApplication($app, $to))
+    {
+      $this->io()->successln('[DONE]');
+    }
+    else
+    {
+      $this->io()->errorln('[ERROR]');
+
+      return self::EXIT_ERROR;
+    }
 
     // Get Source Preferences
     $this->io()->msg('Locating Source Preferences', 50);
-    $srcPrefs = (new AdobePreferences($src))->getPaths();
+    $srcPrefs = $src->getPreferencePaths();
     if (!empty($srcPrefs))
     {
       $this->io()->successln('[DONE]');
@@ -263,9 +283,11 @@ class TransferCommand extends AbstractMacConsole
     $this->io()->successln('[DONE]');
     $this->io()->blankln();
     $this->io()->successln(sprintf(
-        'Preferences have successfully been copied from Adobe %s to Adobe %s.',
+        'Preferences have successfully been copied from Adobe %s %s to Adobe %s %s.',
         $src->getName(),
-        $dst->getName()
+        $src->getYear(),
+        $dst->getName(),
+        $dst->getYear()
     ));
 
     return self::EXIT_SUCCESS;
