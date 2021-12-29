@@ -155,6 +155,25 @@ _It should be noted that this is purely a  "copy" process; no changes are made t
 | to | The destination year, IE - 2020 |  
 | user | This defaults to the current user, which makes it important to include this flag when running this tool as root. |
 
+## Wait Command
+
+This command will wait until a number of conditions are false, or until the number of seconds given has passed.  This is useful for scripts in which you do not want to run the action while one of the configured conditions is present, for instance any script which may require a reboot.
+
+The command can test for High CPU load, console user, battery power, screen sleep prevention (video conferencing), and an in-progress FileVault encryption.  If no condition flags are given, all conditions are tested for.
+
+Example usage:
+
+    jez wait 30 --filevault --power --cpu
+
+|Flags  | Purpose |  
+|--|--|  
+| user | Wait for there to be no console user present |  
+| filevault | Wait until no FileVault encryption is in-progress |  
+| power | Wait until the computer is on AC power |
+| screen | Wait until screen sleep is not prevented |
+| cpu | Wait until there is no high CPU load |
+| json | Output results in JSON format |
+
 ## Ownership Command
 
 This command set the ownership of the given file to the same owner & group as a user's home directory.  Note that symlinks are ignored by this command.

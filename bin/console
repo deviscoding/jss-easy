@@ -22,6 +22,7 @@ $command[] = new DevCoding\Jss\Easy\Command\Download\PkgInstallCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Download\DmgInstallCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Download\ZipInstallCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Download\ConfiguredInstallCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Download\WaitCommand();
 // Preference Commands
 $command[] = new DevCoding\Jss\Easy\Command\ChownCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Preferences\MenuAddCommand();
@@ -29,6 +30,6 @@ $command[] = new DevCoding\Jss\Easy\Command\Preferences\CC\BackupCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Preferences\CC\TransferCommand();
 // Other Commands
 $command[] = new DevCoding\Jss\Easy\Command\PrepCommand();
-$app       = new Application('Jez', 'v3.2.1');
+$app       = new Application('Jez', 'v3.3');
 $app->addCommands($command);
 $app->run();
