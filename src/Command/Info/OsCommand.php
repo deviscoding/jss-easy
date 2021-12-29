@@ -136,11 +136,7 @@ class OsCommand extends AbstractInfoConsole
 
     if (self::USER === $key || self::NAME === $key || self::USER_DIR === $key)
     {
-      try
-      {
-        $MacUser = MacUser::fromConsole();
-      }
-      catch (\Exception $e)
+      if (!$MacUser = MacUser::fromConsole(false))
       {
         return null;
       }
