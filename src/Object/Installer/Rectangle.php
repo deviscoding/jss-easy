@@ -28,7 +28,7 @@ class Rectangle extends GitHubInstaller
       $v = $v->getMajor().'.'.$v->getMinor();
     }
 
-    return sprintf('Rectangle%s.zip', $v);
+    return sprintf('Rectangle%s.dmg', $v);
   }
 
   public function getName()
@@ -38,6 +38,6 @@ class Rectangle extends GitHubInstaller
 
   public function getPath()
   {
-    return '/Applications/Platypus.app';
+    return '/Applications/Rectangle.app';
   }
 }
