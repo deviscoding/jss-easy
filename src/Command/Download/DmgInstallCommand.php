@@ -89,7 +89,7 @@ class DmgInstallCommand extends AbstractDownloadConsole
           {
             $this->setTargetVersion($offer);
             $this->io()->msg('Is Update Needed?', 50);
-            $retval = $this->isInstallNeeded($offer);
+            $retval = $this->isInstallNeeded($offer) ? self::CONTINUE : self::EXIT_SUCCESS;
             $badge  = self::CONTINUE == $retval ? 'yes' : 'no';
             $this->successbg($badge);
           }
