@@ -14,7 +14,9 @@ For installation on client systems, it is recommended that you use a policy that
     ([ -z "$(which jez)" ] && jamf policy --trigger InstallJez) && ([ -z "$(which jez)" ] && echo "ERROR: JEZ Not Installed") && exit 1
     source "$(jez prep)"
 
-At this time, JSS Easy has no dependencies when used in macOS High Sierra, Mojave, Catalina, or Big Sur.  
+At this time, JSS Easy has no dependencies when used in macOS High Sierra, Mojave, Catalina, or Big Sur.
+
+In Monterey, you must install PHP prior to use.
 
 For testing, simply download the `jez.phar` to your utility path, and rename it, for example `/usr/local/bin/jez`.
 
