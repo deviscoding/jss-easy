@@ -42,18 +42,35 @@ class ConfiguredInstallCommand extends AbstractMacConsole
     $alternates = [];
     if ($Installer = $this->getInstaller($name, $alternates))
     {
-      $this->successbg('SUCCESS');
+      $this->successbg($Installer->getName());
+
+      // Find Installed Version
+      $this->io()->msg('Finding Installed Version', 50);
+      $installed = $Installer->getInstalledVersion();
+      $this->successbg($installed ?? 'NONE');
+
+      // Find Current Version
       $this->io()->msg('Finding Current Version', 50);
-      $version = $Installer->getCurrentVersion();
-      if (false === $version || $version)
+      $current = $Installer->getCurrentVersion();
+      if (false === $current || $current)
       {
-        if ($version)
+        if ($current)
         {
-          $version = (new SemanticVersion($version))->__toString();
+          $current = (new SemanticVersion($current))->__toString();
         }
 
-        $this->successbg($version ?: 'SUCCESS');
+        $this->successbg($current ?: 'SUCCESS');
+      }
+      else
+      {
+        $this->errorbg('ERROR');
 
+        return self::EXIT_ERROR;
+      }
+
+      // Install if Needed
+      if (!$Installer->isCurrent())
+      {
         if ($command = $this->getCommand($Installer))
         {
           if ($args = $this->getArguments($Installer))
@@ -64,9 +81,7 @@ class ConfiguredInstallCommand extends AbstractMacConsole
       }
       else
       {
-        $this->errorbg('FAILED');
-
-        return self::EXIT_ERROR;
+        return self::EXIT_SUCCESS;
       }
     }
     else

@@ -4,6 +4,7 @@ namespace DevCoding\Jss\Easy\Object\Installer;
 
 use DevCoding\Mac\Objects\MacApplication;
 use DevCoding\Mac\Objects\MacDevice;
+use DevCoding\Mac\Objects\SemanticVersion;
 
 /**
  * Abstract class to extend for configured installers used in ConfiguredInstallCommand.
@@ -27,6 +28,19 @@ abstract class BaseInstaller
   }
 
   /**
+   * @return MacApplication|null
+   */
+  public function getApplication()
+  {
+    if ($this->isInstalled())
+    {
+      return new MacApplication($this->getPath());
+    }
+
+    return null;
+  }
+
+  /**
    * @return MacDevice
    */
   public function getDevice(): MacDevice
@@ -45,6 +59,52 @@ abstract class BaseInstaller
     }
 
     return null;
+  }
+
+  /**
+   * Evaluates whether the application this installer represents is currently installed at the default path.
+   *
+   * @return bool
+   */
+  public function isInstalled()
+  {
+    return file_exists($this->getPath());
+  }
+
+  /**
+   * Evaluates whether the installed version is current or better.
+   *
+   * @return bool
+   */
+  public function isCurrent()
+  {
+    if ($this->isInstalled())
+    {
+      if ($current = $this->getCurrentVersion())
+      {
+        $installed = $this->getInstalledVersion();
+
+        // If the strings match, good enough
+        if (!$current == $installed)
+        {
+          // Otherwise, we'll break them down and compare them.
+          $cVer = new SemanticVersion($current);
+          $iVer = new SemanticVersion($installed);
+
+          if ($iVer->lt($cVer))
+          {
+            // It's ok if the installed version is greater than current version,
+            // though shouldn't really happen.
+            return false;
+          }
+        }
+
+        return true;
+      }
+    }
+
+    // Default to False
+    return false;
   }
 
   protected function getInstallerTypeFromUrl($url)
