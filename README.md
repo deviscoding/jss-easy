@@ -76,10 +76,12 @@ Example usage:
 | Mozilla Firefox | firefox |
 | Mozilla Firefox Developer Edition | firefox-developer |
 | Google Chrome | google-chrome |
+| GoToMeeting | go-to-meeting |
 | Hyper | hyper |
 | iTerm2 | iterm2 |
 | Jamf PPPC Utility | jamf-pppc-utility |
 | Jetbrains PhpStorm | jetbrains-php-storm |
+| Microsoft Edge | microsoft-edge |
 | Microsoft OneDrive | microsoft-one-drive |
 | Microsoft Teams | microsoft-teams |
 | OpenVPN Connect | open-vpn-connect | 
@@ -87,6 +89,7 @@ Example usage:
 | Rectangle | rectangle |
 | Slack | slack |
 | Sourcetree | sourcetree |
+| Skype | skype |
 | Thunderbird | thunderbird |
 | Visual Studio Code | visual-studio-code |
 
