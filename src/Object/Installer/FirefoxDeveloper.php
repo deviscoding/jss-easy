@@ -3,6 +3,7 @@
 namespace DevCoding\Jss\Easy\Object\Installer;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
+use DevCoding\Mac\Objects\SemanticVersion;
 
 /**
  * Installer configuration class for Mozilla Firefox Developer Edition
@@ -48,24 +49,9 @@ class FirefoxDeveloper extends BaseInstaller
 
   public function getCurrentVersion()
   {
-    $lng = $this->getLanguage();
-    $url = sprintf('https://www.mozilla.org/%s/firefox/new/', $lng);
-    $uag = $this->getUserAgent();
-    $res = (new DownloadHelper())->getUrl($url, null, null, $uag);
+    $ver = $this->getVersionFromUrl($this->getDestinationUrl(), '#Firefox%20(?<version>.*).dmg#');
 
-    if (!empty($res['body']))
-    {
-      $lines = explode("\n", $res['body']);
-      foreach ($lines as $line)
-      {
-        if (preg_match('#data-latest-firefox="(?<version>[^"]+)"#', $line, $m))
-        {
-          return $m['version'];
-        }
-      }
-    }
-
-    return null;
+    return (new SemanticVersion($ver))->__toString();
   }
 
   protected function getLanguage()
