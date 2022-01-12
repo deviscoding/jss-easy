@@ -5,7 +5,6 @@ namespace DevCoding\Jss\Easy\Command\Download;
 use DevCoding\Helper\ClassHelper;
 use DevCoding\Jss\Easy\Object\Installer\BaseInstaller;
 use DevCoding\Mac\Command\AbstractMacConsole;
-use DevCoding\Mac\Objects\SemanticVersion;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -54,11 +53,6 @@ class ConfiguredInstallCommand extends AbstractMacConsole
       $current = $Installer->getCurrentVersion();
       if (false === $current || $current)
       {
-        if ($current)
-        {
-          $current = (new SemanticVersion($current))->__toString();
-        }
-
         $this->successbg($current ?: 'SUCCESS');
       }
       else
@@ -159,6 +153,7 @@ class ConfiguredInstallCommand extends AbstractMacConsole
    * @param string $name
    *
    * @return BaseInstaller|null
+   *
    * @throws \ReflectionException
    */
   protected function getInstaller($name, &$alternates)
@@ -170,6 +165,7 @@ class ConfiguredInstallCommand extends AbstractMacConsole
    * @param string $name
    *
    * @return string|null
+   *
    * @throws \ReflectionException
    */
   protected function getClass($name, &$alternates = [])

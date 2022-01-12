@@ -85,7 +85,7 @@ abstract class BaseInstaller
         $installed = $this->getInstalledVersion();
 
         // If the strings match, good enough
-        if (!$current == $installed)
+        if ($current != $installed)
         {
           // Otherwise, we'll break them down and compare them.
           $cVer = new SemanticVersion($current);
