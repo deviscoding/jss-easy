@@ -13,6 +13,8 @@ use DevCoding\Mac\Objects\MacApplication;
  */
 class GoogleChrome extends BaseInstaller
 {
+  protected $current;
+
   public function getName()
   {
     return 'Google Chrome';
@@ -50,27 +52,30 @@ class GoogleChrome extends BaseInstaller
 
   public function getCurrentVersion()
   {
-    $res = (new DownloadHelper())->getUrl('https://omahaproxy.appspot.com/json', null, null, $this->getUserAgent());
-
-    if (!empty($res['body']))
+    if (!isset($this->current))
     {
-      $data = json_decode($res['body'], true);
+      $res = (new DownloadHelper())->getUrl('https://omahaproxy.appspot.com/json', null, null, $this->getUserAgent());
 
-      foreach ($data as $datum)
+      if (!empty($res['body']))
       {
-        if ('mac' === $datum['os'])
+        $data = json_decode($res['body'], true);
+
+        foreach ($data as $datum)
         {
-          foreach ($datum['versions'] as $version)
+          if ('mac' === $datum['os'])
           {
-            if ('stable' === $version['channel'])
+            foreach ($datum['versions'] as $version)
             {
-              return $version['current_version'];
+              if ('stable' === $version['channel'])
+              {
+                $this->current = str_replace('-', '.', $version['current_version']);
+              }
             }
           }
         }
       }
     }
 
-    return null;
+    return $this->current;
   }
 }
