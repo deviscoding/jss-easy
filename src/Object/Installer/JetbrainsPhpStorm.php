@@ -48,7 +48,7 @@ class JetbrainsPhpStorm extends BaseInstaller
 
   public function getCurrentVersion()
   {
-    return $this->getVersionFromUrl($this->getDestinationUrl());
+    return $this->getVersionFromUrl($this->getDestinationUrl(), '#PhpStorm-(?<version>[0-9.]+)-?(?<arch>[a-z0-9]+)?\.#');
   }
 
   public function getInstallerType()
