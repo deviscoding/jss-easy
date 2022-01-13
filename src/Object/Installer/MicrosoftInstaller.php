@@ -5,13 +5,15 @@ namespace DevCoding\Jss\Easy\Object\Installer;
 use DevCoding\Command\Base\Traits\ShellTrait;
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use DevCoding\Mac\Objects\MacApplication;
+use DevCoding\Mac\Objects\SemanticVersion;
+
 /**
  * Abstract Installer configuration class for Microsoft applications.
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-abstract class MicrosoftInstaller  extends BaseInstaller
+abstract class MicrosoftInstaller extends BaseInstaller
 {
   use ShellTrait;
 
@@ -37,13 +39,34 @@ abstract class MicrosoftInstaller  extends BaseInstaller
     return (new MacApplication($this->getPath()))->getShortVersion()->__toString();
   }
 
+  /**
+   * @throws \Exception
+   */
   public function getCurrentVersion()
   {
-    $v = $this->getShellExec(sprintf("curl -fs https://macadmins.software/latest.xml | xpath -q -e '//latest/package[id=\"%s\"]/version'", $this->getPackageName()));
+    $result = (new DownloadHelper())->getUrl('https://macadmins.software/latest.xml');
+    $body   = $result['body'] ?? null;
 
-    if (preg_match('#([0-9]+.[0-9]+.[0-9]+)#', $v, $matches))
+    if ($body)
     {
-      return $matches[1];
+      $xpath = sprintf('/latest/package[id="%s"]/version', $this->getPackageName());
+
+      try
+      {
+        if ($xml = (new \SimpleXMLElement($body))->xpath($xpath))
+        {
+          $data = (string) $xml[0];
+
+          if (preg_match('#([0-9]+.[0-9]+.[0-9]+)#', $data, $m))
+          {
+            return (new SemanticVersion($m[1]))->__toString();
+          }
+        }
+      }
+      catch (\Exception $e)
+      {
+        return null;
+      }
     }
 
     return null;
