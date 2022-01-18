@@ -79,28 +79,28 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
   {
     if (!$this->isOverwrite())
     {
-    // Check Vs. Current if Provided
+      // Check Vs. Current if Provided
       $installer = $this->getInstaller();
       $installed = $installer->getInstalledVersion();
       $current   = $installer->getCurrentVersion();
 
-    if ($installed && $current)
-    {
+      if ($installed && $current)
+      {
         if ($installer->isInstalled())
         {
-      $this->io()->msg('Is Update Needed?', 50);
+          $this->io()->msg('Is Update Needed?', 50);
 
           if ($installer->isCurrent())
-      {
-        $this->successbg($installed);
+          {
+            $this->successbg($installed);
 
-        return self::EXIT_SUCCESS;
-      }
-      else
-      {
-        $this->successbg($installed);
-      }
-    }
+            return self::EXIT_SUCCESS;
+          }
+          else
+          {
+            $this->successbg($installed);
+          }
+        }
       }
     }
 
@@ -380,6 +380,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
    * @param $file
    *
    * @noinspection DuplicatedCode
+   *
    * @return bool
    */
   protected function getDownload($url, $file)
@@ -414,6 +415,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
    * @param null $etag
    *
    * @noinspection DuplicatedCode
+   *
    * @return array
    */
   protected function getUrl($url, $default = null, $etag = null)
@@ -585,5 +587,4 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
 
     return $Process;
   }
-
 }
