@@ -2,6 +2,8 @@
 
 namespace DevCoding\Jss\Easy\Command\Download;
 
+use DevCoding\Jss\Easy\Object\Installer\BaseInstaller;
+use DevCoding\Jss\Easy\Object\Installer\GenericInstaller;
 use DevCoding\Mac\Command\AbstractMacConsole;
 use DevCoding\Mac\Objects\MacApplication;
 use DevCoding\Mac\Objects\SemanticVersion;
@@ -20,6 +22,8 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
   protected $_downloadFile;
   /** @var SemanticVersion */
   protected $_target;
+  /** @var GenericInstaller */
+  protected $_installer;
 
   /**
    * @return bool
@@ -289,6 +293,25 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
   // endregion ///////////////////////////////////////////// End Version Methods
 
   // region //////////////////////////////////////////////// Input/Output Methods
+
+  /**
+   * @return BaseInstaller
+   */
+  protected function getInstaller()
+  {
+    if (!isset($this->_installer))
+    {
+      $this->_installer = new GenericInstaller(
+          $this->getDevice(),
+          $this->io()->getArgument('destination'),
+          $this->io()->getArgument('url'),
+          $this->io()->getOption('target') ?? false,
+          $this->io()->getOption('installed') ?? null
+      );
+    }
+
+    return $this->_installer;
+  }
 
   /**
    * @return string
