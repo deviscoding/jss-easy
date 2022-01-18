@@ -380,7 +380,6 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
    * @param $file
    *
    * @noinspection DuplicatedCode
-   *
    * @return bool
    */
   protected function getDownload($url, $file)
@@ -415,7 +414,6 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
    * @param null $etag
    *
    * @noinspection DuplicatedCode
-   *
    * @return array
    */
   protected function getUrl($url, $default = null, $etag = null)
@@ -571,7 +569,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
 
   /**
    * Returns a process object by using Process::fromShellCommandline, then setting the timeout according to the input
-   * option or it's default.
+   * option, or it's default.
    *
    * @param string $cmd
    *
