@@ -77,23 +77,30 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
    */
   protected function executeUpgradeCheck(InputInterface $input, OutputInterface $output)
   {
+    if (!$this->isOverwrite())
+    {
     // Check Vs. Current if Provided
-    $installed = $this->getInstalledVersion();
-    $current   = $this->getTargetVersion();
+      $installer = $this->getInstaller();
+      $installed = $installer->getInstalledVersion();
+      $current   = $installer->getCurrentVersion();
+
     if ($installed && $current)
     {
+        if ($installer->isInstalled())
+        {
       $this->io()->msg('Is Update Needed?', 50);
 
-      if ($installed->gte($current))
+          if ($installer->isCurrent())
       {
         $this->successbg($installed);
-        $this->io()->blankln();
 
         return self::EXIT_SUCCESS;
       }
       else
       {
         $this->successbg($installed);
+      }
+    }
       }
     }
 
