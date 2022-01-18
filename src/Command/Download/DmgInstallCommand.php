@@ -2,14 +2,18 @@
 
 namespace DevCoding\Jss\Easy\Command\Download;
 
+use DevCoding\Jss\Easy\Exception\DmgMountException;
 use DevCoding\Jss\Easy\Object\File\PkgFile;
 use DevCoding\Mac\Objects\MacApplication;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DmgInstallCommand extends AbstractDownloadConsole
+class DmgInstallCommand extends AbstractArchiveDownloadConsole
 {
+  /** @var array */
+  protected $mounts;
+
   protected function isTargetOption()
   {
     return true;
@@ -30,205 +34,67 @@ class DmgInstallCommand extends AbstractDownloadConsole
     $this->setName('install:dmg')->addArgument('url', InputArgument::REQUIRED);
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output)
+  protected function executeCleanup(InputInterface $input, OutputInterface $output)
   {
-    // Check Vs. Current if Provided
-    $retval = $this->executeUpgradeCheck($input, $output);
-    if (self::CONTINUE !== $retval)
-    {
-      return $retval;
-    }
-
-    // Download & Install
-    $retval = $this->executeDownload($input, $output);
-    if (self::CONTINUE !== $retval)
-    {
-      return $retval;
-    }
-
-    // Mount the DMG
-    $this->io()->msg('Mounting DMG File', 50);
-    $dmgFile = $this->getDownloadFile();
-    if (!$mount = $this->mount($dmgFile, $error))
-    {
-      $this->errorbg('ERROR');
-      $this->io()->write('  '.$error);
-
-      $retval = self::EXIT_ERROR;
-    }
-    else
-    {
-      $this->successbg('SUCCESS');
-    }
-
-    if (self::CONTINUE === $retval)
-    {
-      $this->io()->msg('Checking DMG for File', 50);
-      if ($File = $this->getDestinationFromVolume($mount['volume']))
-      {
-        $this->successbg('FOUND');
-        if ($File instanceof MacApplication)
-        {
-          // Verify we don't have a version mismatch
-          $offer  = $File->getShortVersion();
-          $target = $this->getTargetVersion();
-          if ($offer && $target)
-          {
-            if ($target->eq($offer))
-            {
-              $retval = self::CONTINUE;
-            }
-            else
-            {
-              $this->io()->msg('Comparing Versions', 50);
-              $this->errorbg('NO MATCH');
-              $retval = self::EXIT_ERROR;
-            }
-          }
-          elseif ($offer)
-          {
-            $this->setTargetVersion($offer);
-            $this->io()->msg('Is Update Needed?', 50);
-            $retval = $this->isInstallNeeded($offer) ? self::CONTINUE : self::EXIT_SUCCESS;
-            $badge  = self::CONTINUE == $retval ? 'yes' : 'no';
-            $this->successbg($badge);
-          }
-          else
-          {
-            $this->io()->msg('Comparing Versions', 50);
-            $this->errorbg('ERROR');
-            $this->io()->write('  Could not determine version within DMG.');
-            $retval = self::EXIT_ERROR;
-          }
-        }
-        else
-        {
-          $retval = $this->executeOverwriteCheck($input, $output);
-        }
-      }
-      else
-      {
-        $this->errorbg('NOT FOUND');
-
-        $retval = self::EXIT_ERROR;
-      }
-    }
-
-    // Perform Installation
-    if (self::CONTINUE === $retval && isset($File))
-    {
-      if ($File instanceof MacApplication)
-      {
-        $this->io()->msg('Installing APP Bundle', 50);
-        if (!$this->installAppFile($File, $errors))
-        {
-          $retval = self::EXIT_ERROR;
-        }
-        else
-        {
-          $retval = self::EXIT_SUCCESS;
-        }
-      }
-      elseif ($File instanceof PkgFile)
-      {
-        $this->io()->msg('Installing from PKG', 50);
-        if (!$this->installPkgFile($File, $errors))
-        {
-          $retval = self::EXIT_ERROR;
-        }
-        else
-        {
-          $retval = self::EXIT_SUCCESS;
-        }
-      }
-      else
-      {
-        $this->io()->msg('Copying File to Destination', 50);
-        if (!$this->installFile($File, $errors))
-        {
-          $retval = self::EXIT_ERROR;
-        }
-        else
-        {
-          $retval = self::EXIT_SUCCESS;
-        }
-      }
-
-      if (self::EXIT_ERROR === $retval)
-      {
-        $this->errorbg('ERROR');
-        if (!empty($errors))
-        {
-          $errors = explode("\n", $errors);
-          foreach ($errors as $error)
-          {
-            $this->io()->writeln('  '.$error);
-          }
-        }
-      }
-      else
-      {
-        $this->successbg('SUCCESS');
-      }
-    }
-
-    // Verify Installation
-    $this->io()->msg('Verifying Installation', 50);
-    $target = $this->getTargetVersion();
-    if (!$this->isInstalled())
-    {
-      $this->errorbg('error');
-      $this->io()->writeln('  Application not found at destination: '.$this->getDestination());
-    }
-    elseif ($target && !$this->isVersionMatch($target))
-    {
-      $retval = self::EXIT_ERROR;
-
-      $this->errorbg('error');
-      if ($new = $this->getAppVersion($this->getDestination()))
-      {
-        $this->io()->writeln(sprintf('  New Version (%s) != Target Version (%s)!', $new, $target));
-      }
-      else
-      {
-        $this->io()->writeln('  Cannot read new version number!');
-      }
-    }
-    else
-    {
-      $retval = self::EXIT_SUCCESS;
-
-      $this->successbg('SUCCESS');
-    }
-
-    // Unmount
-    $this->io()->msg('Unmounting Volume', 50);
-    if (!$this->unmount($mount, $error))
-    {
-      $this->errorbg('ERROR');
-      $this->io()->write('  '.$error);
-    }
-    else
-    {
-      $this->successbg('SUCCESS');
-    }
-
-    // Clean Up
     $this->io()->msg('Cleaning Up', 50);
+    $retval  = self::EXIT_SUCCESS;
+    $dmgFile = $this->getDownloadFile();
+    if (!$this->unmount($dmgFile, $error))
+    {
+      $this->errorbg('ERROR');
+      $this->io()->write('  '.$error);
+
+      $retval = self::EXIT_ERROR;
+    }
+
     if (file_exists($dmgFile) && !unlink($dmgFile))
     {
       $this->errorbg('ERROR');
       $this->io()->write('  Download: '.$dmgFile);
       $this->io()->write('  Download File could not be removed.');
 
-      return self::EXIT_ERROR;
+      $retval = self::EXIT_ERROR;
     }
-    else
+
+    if (self::EXIT_SUCCESS === $retval)
     {
       $this->successbg('SUCCESS');
     }
 
     return $retval;
+  }
+
+  protected function executeExtract(InputInterface $input, OutputInterface $output)
+  {
+    $this->io()->msg('Mounting DMG File', 50);
+    try
+    {
+      $mount  = $this->mount($this->getDownloadFile());
+      $volume = $mount['volume'];
+
+      $this->successbg('SUCCESS');
+    }
+    catch (DmgMountException $e)
+    {
+      $this->errorbg('ERROR');
+      $this->io()->write('  ', $e->getMessage());
+
+      return self::EXIT_ERROR;
+    }
+
+    $this->io()->msg('Checking DMG for File', 50);
+    if (!$this->getSource())
+    {
+      $this->errorbg('NOT FOUND');
+
+      return self::EXIT_ERROR;
+    }
+    else
+    {
+      $this->successbg('FOUND');
+    }
+
+    return self::CONTINUE;
   }
 
   protected function isInstallNeeded($version)
@@ -237,11 +103,22 @@ class DmgInstallCommand extends AbstractDownloadConsole
   }
 
   /**
+   * @return PkgFile|MacApplication|string|null
+   * @throws DmgMountException
+   */
+  protected function getSource()
+  {
+    $mount = $this->mount($this->getDownloadFile());
+
+    return $this->getSourceFromVolume($mount['volume']);
+  }
+
+  /**
    * @param string $volume
    *
    * @return PkgFile|MacApplication|string|null
    */
-  protected function getDestinationFromVolume($volume)
+  protected function getSourceFromVolume($volume)
   {
     if (!$file = $this->getAppFromVolume($volume))
     {
@@ -305,65 +182,81 @@ class DmgInstallCommand extends AbstractDownloadConsole
     return null;
   }
 
-  protected function unmount($mount, &$error)
+  protected function unmount($dmgFile, &$error)
   {
-    if (is_dir($mount['volume']))
+    if (!empty($this->mounts[$dmgFile]))
     {
-      $cmd     = sprintf('/usr/bin/hdiutil detach "%s"', $mount['dev']);
-      $Process = $this->getProcessFromShellCommandLine($cmd);
-      $Process->run();
-
-      if (!$Process->isSuccessful())
+      $mount = $this->mounts[$dmgFile];
+      if (is_dir($mount['volume']))
       {
-        $error = 'volume: '.$mount['volume']."\ndevice: ".$mount['dev']."\n";
-        $error .= $Process->getErrorOutput();
+        $cmd     = sprintf('/usr/bin/hdiutil detach "%s"', $mount['dev']);
+        $Process = $this->getProcessFromShellCommandLine($cmd);
+        $Process->run();
 
-        return false;
-      }
-
-      $x = 0;
-      do
-      {
-        ++$x;
-        if ($x > 30)
+        if (!$Process->isSuccessful())
         {
           $error = 'volume: '.$mount['volume']."\ndevice: ".$mount['dev']."\n";
-          $error .= 'Volume still exists after unmount.';
+          $error .= $Process->getErrorOutput();
 
           return false;
         }
 
-        sleep(1);
-      } while (is_dir($mount['volume']));
+        $x = 0;
+        do
+        {
+          ++$x;
+          if ($x > 30)
+          {
+            $error = 'volume: '.$mount['volume']."\ndevice: ".$mount['dev']."\n";
+            $error .= 'Volume still exists after unmount.';
+
+            return false;
+          }
+
+          sleep(1);
+        } while (is_dir($mount['volume']));
+      }
     }
 
     return true;
   }
 
-  protected function mount($dmgFile, &$error)
+  /**
+   * @param string $dmgFile
+   *
+   * @return array
+   * @throws DmgMountException
+   */
+  protected function mount($dmgFile)
   {
-    $cmd     = sprintf('/usr/bin/hdiutil attach "%s" -nobrowse', $dmgFile);
-    $Process = $this->getProcessFromShellCommandLine($cmd);
-    $Process->run();
+    if (empty($this->mounts[$dmgFile]))
+    {
+      $cmd     = sprintf('/usr/bin/hdiutil attach "%s" -nobrowse', $dmgFile);
+      $Process = $this->getProcessFromShellCommandLine($cmd);
+      $Process->run();
 
-    if (!$Process->isSuccessful())
-    {
-      $error = $Process->getErrorOutput();
-    }
-    else
-    {
-      $output = explode("\n", $Process->getOutput());
-      foreach ($output as $line)
+      if (!$Process->isSuccessful())
       {
-        if (preg_match('/^\/dev\/([^\s]+)\s+([^\/]+)(\/Volumes\/(.*))$/', $line, $matches))
+        throw new DmgMountException($dmgFile, $Process->getErrorOutput() ?? $Process->getOutput());
+      }
+      else
+      {
+        $output = explode("\n", $Process->getOutput());
+        foreach ($output as $line)
         {
-          return ['dev' => $matches[1], 'volume' => $matches[3]];
+          if (preg_match('/^\/dev\/([^\s]+)\s+([^\/]+)(\/Volumes\/(.*))$/', $line, $matches))
+          {
+            $this->mounts[$dmgFile] = ['dev' => $matches[1], 'volume' => $matches[3]];
+          }
+        }
+
+        if (empty($this->mounts[$dmgFile]))
+        {
+          throw new DmgMountException($dmgFile, 'Could not determine mount point!');
         }
       }
-
-      $error = 'Could not determine mount point!';
     }
 
-    return false;
+    return $this->mounts[$dmgFile];
   }
 }

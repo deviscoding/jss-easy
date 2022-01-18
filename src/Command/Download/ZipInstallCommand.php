@@ -2,6 +2,7 @@
 
 namespace DevCoding\Jss\Easy\Command\Download;
 
+use DevCoding\Jss\Easy\Exception\ZipExtractException;
 use DevCoding\Jss\Easy\Object\File\PkgFile;
 use DevCoding\Mac\Objects\MacApplication;
 use Symfony\Component\Console\Input\InputArgument;
@@ -13,10 +14,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
+ *
  * @package DevCoding\Jss\Easy\Command\Download
  */
-class ZipInstallCommand extends AbstractDownloadConsole
+class ZipInstallCommand extends AbstractArchiveDownloadConsole
 {
+  /**
+   * @var string[]
+   */
+  protected $unzipped;
+
   protected function isTargetOption()
   {
     return true;
@@ -37,198 +44,70 @@ class ZipInstallCommand extends AbstractDownloadConsole
     $this->setName('install:zip')->addArgument('url', InputArgument::REQUIRED);
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output)
+  protected function executeExtract(InputInterface $input, OutputInterface $output)
   {
-    // Check Vs. Current if Provided
-    $retval = $this->executeUpgradeCheck($input, $output);
-    if (self::CONTINUE !== $retval)
-    {
-      return $retval;
-    }
+    $this->io()->msg('Decompressing ZIP File', 50);
 
-    // Download & Install
-    $retval = $this->executeDownload($input, $output);
-    if (self::CONTINUE !== $retval)
+    try
     {
-      return $retval;
-    }
+      $this->unzip($this->getDownloadFile());
+      $this->successbg('SUCCESS');
 
-    // Mount the DMG
-    $this->io()->msg('Uncompressing ZIP File', 50);
-    $zipFile = $this->getDownloadFile();
-    if (!$unzip = $this->unzip($zipFile, $error))
+      return self::CONTINUE;
+    }
+    catch (ZipExtractException $e)
     {
       $this->errorbg('ERROR');
-      $this->io()->write('  '.$error);
+      $this->io()->write('  '.$e->getMessage());
 
-      $retval = self::EXIT_ERROR;
+      return self::EXIT_ERROR;
     }
-    else
-    {
-      $this->successbg('SUCCESS');
-    }
+  }
 
-    if (self::CONTINUE === $retval)
+  protected function executeCleanup(InputInterface $input, OutputInterface $output)
+  {
+    $this->io()->msg('Cleaning Up', 50);
+    $retval  = self::EXIT_SUCCESS;
+    $zipFile = $this->getDownloadFile();
+    if (!empty($this->unzipped[$zipFile]))
     {
-      $this->io()->msg('Checking ZIP for File', 50);
-      if ($File = $this->getDestinationFromDir($unzip))
+      try
       {
-        $this->successbg('FOUND');
-        if ($File instanceof MacApplication)
-        {
-          // Verify we don't have a version mismatch
-          $offer  = $File->getShortVersion();
-          $target = $this->getTargetVersion();
-          if ($offer && $target)
-          {
-            if ($target->eq($offer))
-            {
-              $retval = self::CONTINUE;
-            }
-            else
-            {
-              $this->io()->msg('Comparing Versions', 50);
-              $this->errorbg('NO MATCH');
-              $retval = self::EXIT_ERROR;
-            }
-          }
-          elseif ($offer)
-          {
-            $this->setTargetVersion($offer);
-            $this->io()->msg('Is Update Needed?', 50);
-            $retval = $this->isInstallNeeded($offer);
-            $badge  = self::CONTINUE == $retval ? 'yes' : 'no';
-            $this->successbg($badge);
-          }
-          else
-          {
-            $this->io()->msg('Comparing Versions', 50);
-            $this->errorbg('ERROR');
-            $this->io()->write('  Could not determine version within DMG.');
-            $retval = self::EXIT_ERROR;
-          }
-        }
-        else
-        {
-          $retval = $this->executeOverwriteCheck($input, $output);
-        }
+        $this->rrmdir($this->unzipped[$zipFile]);
       }
-      else
+      catch (\Exception $e)
       {
-        $this->errorbg('NOT FOUND');
+        $this->errorbg('ERROR');
+        $this->io()->write('  '.$e->getMessage());
 
         $retval = self::EXIT_ERROR;
       }
     }
 
-    // Perform Installation
-    if (self::CONTINUE === $retval && isset($File))
-    {
-      if ($File instanceof MacApplication)
-      {
-        $this->io()->msg('Installing APP Bundle', 50);
-        if (!$this->installAppFile($File, $errors))
-        {
-          $retval = self::EXIT_ERROR;
-        }
-        else
-        {
-          $retval = self::EXIT_SUCCESS;
-        }
-      }
-      elseif ($File instanceof PkgFile)
-      {
-        $this->io()->msg('Installing from PKG', 50);
-        if (!$this->installPkgFile($File, $errors))
-        {
-          $retval = self::EXIT_ERROR;
-        }
-        else
-        {
-          $retval = self::EXIT_SUCCESS;
-        }
-      }
-      else
-      {
-        $this->io()->msg('Copying File to Destination', 50);
-        if (!$this->installFile($File, $errors))
-        {
-          $retval = self::EXIT_ERROR;
-        }
-        else
-        {
-          $retval = self::EXIT_SUCCESS;
-        }
-      }
-
-      if (self::EXIT_ERROR === $retval)
-      {
-        $this->errorbg('ERROR');
-        if (!empty($errors))
-        {
-          $errors = explode("\n", $errors);
-          foreach ($errors as $error)
-          {
-            $this->io()->writeln('  '.$error);
-          }
-        }
-      }
-      else
-      {
-        $this->successbg('SUCCESS');
-      }
-    }
-
-    // Verify Installation
-    $this->io()->msg('Verifying Installation', 50);
-    $target = $this->getTargetVersion();
-    if (!$this->isInstalled())
-    {
-      $this->errorbg('error');
-      $this->io()->writeln('  Application not found at destination: '.$this->getDestination());
-    }
-    elseif ($target && !$this->isVersionMatch($target))
-    {
-      $retval = self::EXIT_ERROR;
-
-      $this->errorbg('error');
-      if ($new = $this->getAppVersion($this->getDestination()))
-      {
-        $this->io()->writeln(sprintf('  New Version (%s) != Target Version (%s)!', $new, $target));
-      }
-      else
-      {
-        $this->io()->writeln('  Cannot read new version number!');
-      }
-    }
-    else
-    {
-      $retval = self::EXIT_SUCCESS;
-
-      $this->successbg('SUCCESS');
-    }
-
-    // Clean Up
-    $this->io()->msg('Cleaning Up', 50);
     if (file_exists($zipFile) && !unlink($zipFile))
     {
       $this->errorbg('ERROR');
       $this->io()->write('  Download: '.$zipFile);
       $this->io()->write('  Download File could not be removed.');
 
-      return self::EXIT_ERROR;
+      $retval = self::EXIT_ERROR;
     }
-    else
+
+    if (self::EXIT_SUCCESS === $retval)
     {
       $this->successbg('SUCCESS');
     }
-
-    return $retval;
   }
 
-  protected function isInstallNeeded($version)
+  /**
+   * @return string|null
+   * @throws ZipExtractException
+   */
+  protected function getSource()
   {
-    return !$this->isInstalled() || $this->isOverwrite() || $this->isVersionGreater($version);
+    $unzip = $this->unzip($this->getDownloadFile());
+
+    return $this->getDestinationFromDir($unzip);
   }
 
   /**
@@ -307,27 +186,31 @@ class ZipInstallCommand extends AbstractDownloadConsole
 
   /**
    * @param string $zipFile
-   * @param string $error
    *
-   * @return false|string
+   * @return string|null
+   *
+   * @throws ZipExtractException
    */
-  protected function unzip($zipFile, &$error)
+  protected function unzip($zipFile)
   {
-    $dest    = tempnam($this->getCacheDir(), pathinfo($zipFile, PATHINFO_FILENAME).'-');
-    unlink($dest);
-    $cmd     = sprintf('/usr/bin/unzip "%s" -d "%s"', $zipFile, $dest);
-    $Process = $this->getProcessFromShellCommandLine($cmd);
-    $Process->run();
-
-    if (!$Process->isSuccessful())
+    if (!isset($this->unipped[$zipFile]))
     {
-      $error = $Process->getErrorOutput();
-    }
-    else
-    {
-      return $dest;
+      $dest = tempnam($this->getCacheDir(), pathinfo($zipFile, PATHINFO_FILENAME).'-');
+      unlink($dest);
+      $cmd     = sprintf('/usr/bin/unzip "%s" -d "%s"', $zipFile, $dest);
+      $Process = $this->getProcessFromShellCommandLine($cmd);
+      $Process->run();
+
+      if (!$Process->isSuccessful())
+      {
+        throw new ZipExtractException($zipFile, $Process->getErrorOutput() ?? $Process->getOutput());
+      }
+      else
+      {
+        return $this->unzipped[$zipFile] = $dest;
+      }
     }
 
-    return false;
+    return $this->unzipped[$zipFile];
   }
 }

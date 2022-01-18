@@ -68,6 +68,40 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     }
   }
 
+  protected function executeVerify(InputInterface $input, OutputInterface $output)
+  {
+    // Verify Installation
+    $this->io()->msg('Verifying Installation', 50);
+    $target = $this->getTargetVersion();
+    if (!$this->isInstalled())
+    {
+      $this->errorbg('error');
+      $this->io()->writeln('  Application not found at destination: '.$this->getDestination());
+
+      return self::EXIT_ERROR;
+    }
+    elseif ($target && !$this->isVersionMatch($target))
+    {
+      $this->errorbg('error');
+      if ($new = $this->getAppVersion($this->getDestination()))
+      {
+        $this->io()->writeln(sprintf('  New Version (%s) != Target Version (%s)!', $new, $target));
+      }
+      else
+      {
+        $this->io()->writeln('  Cannot read new version number!');
+      }
+
+      return self::EXIT_ERROR;
+    }
+    else
+    {
+      $this->successbg('SUCCESS');
+
+      return self::EXIT_SUCCESS;
+    }
+  }
+
   /**
    * @param InputInterface  $input
    * @param OutputInterface $output
