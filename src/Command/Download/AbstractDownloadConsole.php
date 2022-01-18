@@ -219,15 +219,15 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
    */
   protected function getTargetVersion()
   {
-    if (empty($this->_target))
+    if (!isset($this->_target))
     {
       if ($ver = $this->io()->getOption('target'))
       {
-        return new SemanticVersion($ver);
+        $this->_target = new SemanticVersion($ver);
       }
     }
 
-    return null;
+    return $this->_target;
   }
 
   /**
