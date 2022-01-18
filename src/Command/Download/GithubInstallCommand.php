@@ -60,7 +60,7 @@ class GithubInstallCommand extends AbstractDownloadConsole
     }
     else
     {
-      if ($repo = $input->getOption('repo') && $file = $input->getOption('file'))
+      if (($repo = $input->getOption('repo')) && ($file = $input->getOption('file')))
       {
         $input->setArgument('source', $repo.'/'.$file);
       }
