@@ -8,7 +8,7 @@ use DevCoding\Mac\Objects\MacApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-abstract class AbstractArchiveDownloadConsole extends AbstractDownloadConsole
+abstract class AbstractArchiveInstallConsole extends AbstractInstallConsole
 {
   /**
    * @param InputInterface  $input
@@ -28,6 +28,7 @@ abstract class AbstractArchiveDownloadConsole extends AbstractDownloadConsole
 
   /**
    * @return PkgFile|MacApplication|string|null
+   *
    * @throws DmgMountException
    */
   abstract protected function getSource();
@@ -77,6 +78,7 @@ abstract class AbstractArchiveDownloadConsole extends AbstractDownloadConsole
    * @param OutputInterface $output
    *
    * @return int
+   *
    * @throws DmgMountException
    */
   protected function executeVerifySource(InputInterface $input, OutputInterface $output)
@@ -141,6 +143,7 @@ abstract class AbstractArchiveDownloadConsole extends AbstractDownloadConsole
    * @param OutputInterface $output
    *
    * @return int
+   *
    * @throws DmgMountException
    */
   protected function executeInstall(InputInterface $input, OutputInterface $output)

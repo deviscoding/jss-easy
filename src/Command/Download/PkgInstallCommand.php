@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package DevCoding\Jss\Easy\Command\Download
  */
-class PkgInstallCommand extends AbstractDownloadConsole
+class PkgInstallCommand extends AbstractInstallConsole
 {
   /**
    * Specifies whether this command may use the '--target' option.

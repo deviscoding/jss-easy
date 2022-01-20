@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DmgInstallCommand extends AbstractArchiveDownloadConsole
+class DmgInstallCommand extends AbstractArchiveInstallConsole
 {
   /** @var array */
   protected $mounts;
@@ -104,6 +104,7 @@ class DmgInstallCommand extends AbstractArchiveDownloadConsole
 
   /**
    * @return PkgFile|MacApplication|string|null
+   *
    * @throws DmgMountException
    */
   protected function getSource()
@@ -225,6 +226,7 @@ class DmgInstallCommand extends AbstractArchiveDownloadConsole
    * @param string $dmgFile
    *
    * @return array
+   *
    * @throws DmgMountException
    */
   protected function mount($dmgFile)

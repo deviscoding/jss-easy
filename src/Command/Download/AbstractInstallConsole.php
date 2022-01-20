@@ -13,7 +13,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-abstract class AbstractDownloadConsole extends AbstractMacConsole
+
+abstract class AbstractInstallConsole extends AbstractMacConsole
 {
   const CONTINUE = -1;
 
