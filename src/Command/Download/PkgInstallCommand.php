@@ -76,6 +76,11 @@ class PkgInstallCommand extends AbstractInstallConsole
         }
       }
     }
+    else
+    {
+      return self::EXIT_ERROR;
+    }
+  }
 
     if (self::EXIT_SUCCESS === $retval && self::EXIT_SUCCESS === $this->executeCleanup($input, $output))
     {

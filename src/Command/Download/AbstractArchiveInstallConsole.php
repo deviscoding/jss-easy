@@ -3,22 +3,40 @@
 namespace DevCoding\Jss\Easy\Command\Download;
 
 use DevCoding\Jss\Easy\Exception\DmgMountException;
+use DevCoding\Jss\Easy\Exception\ZipExtractException;
 use DevCoding\Jss\Easy\Object\File\PkgFile;
 use DevCoding\Mac\Objects\MacApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Base class for install commands which download an archive or disk image.
+ *
+ * @author  AMJones <am@jonesiscoding.com>
+ * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
+ *
+ * @package DevCoding\Jss\Easy\Command\Download
+ */
 abstract class AbstractArchiveInstallConsole extends AbstractInstallConsole
 {
   /**
+   * Must extract the downloaded file, and provide user feedback on the success of those operations.
+   * Must return -1 for success (implying that installation should continue) or 1 for an error.
+   *
    * @param InputInterface  $input
    * @param OutputInterface $output
    *
    * @return int
+   *
+   * @throws DmgMountException
+   * @throws ZipExtractException
    */
   abstract protected function executeExtract(InputInterface $input, OutputInterface $output);
 
   /**
+   * Must clean up any downloaded or extract files, and provide the user feedback on the success of those operations.
+   * Must return 0 for success, or 1 for an error.
+   *
    * @param InputInterface  $input
    * @param OutputInterface $output
    *
@@ -27,12 +45,27 @@ abstract class AbstractArchiveInstallConsole extends AbstractInstallConsole
   abstract protected function executeCleanup(InputInterface $input, OutputInterface $output);
 
   /**
+   * Must return the extracted source file as a PkgFile, MacApplication, or string.
+   *
    * @return PkgFile|MacApplication|string|null
    *
    * @throws DmgMountException
+   * @throws ZipExtractException
    */
   abstract protected function getSource();
 
+  /**
+   * Performs a check to determine if the file should be downloaded & installed, downloads, extracts, verifies source,
+   * installs, verifies the installed application, then cleans up.
+   *
+   * @param InputInterface  $input
+   * @param OutputInterface $output
+   *
+   * @return int
+   *
+   * @throws DmgMountException
+   * @throws ZipExtractException
+   */
   protected function execute(InputInterface $input, OutputInterface $output)
   {
     // Check Vs. Current if Provided
@@ -74,12 +107,15 @@ abstract class AbstractArchiveInstallConsole extends AbstractInstallConsole
   }
 
   /**
+   * Verifies that the extracted source contains the destination application, or a PKG installer.
+   *
    * @param InputInterface  $input
    * @param OutputInterface $output
    *
    * @return int
    *
-   * @throws DmgMountException
+   *
+   * @throws DmgMountException|ZipExtractException
    */
   protected function executeVerifySource(InputInterface $input, OutputInterface $output)
   {
@@ -139,12 +175,15 @@ abstract class AbstractArchiveInstallConsole extends AbstractInstallConsole
   }
 
   /**
+   * Installs the application using from a PKG or by copying the file or application bundle.
+   *
    * @param InputInterface  $input
    * @param OutputInterface $output
    *
    * @return int
    *
-   * @throws DmgMountException
+   *
+   * @throws DmgMountException|ZipExtractException
    */
   protected function executeInstall(InputInterface $input, OutputInterface $output)
   {

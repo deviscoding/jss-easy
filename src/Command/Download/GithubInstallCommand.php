@@ -8,18 +8,36 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GithubInstallCommand extends AbstractDownloadConsole
+/**
+ * Command to install an application or binary file from a release in a GitHub repo. Verifies that the DMG should be
+ * downloaded, then downloads, mounts/extracts, verifies source, installs, unmounts, and cleans up.
+ *
+ * @author  AMJones <am@jonesiscoding.com>
+ * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
+ *
+ * @package DevCoding\Jss\Easy\Command\Download
+ */
+class GithubInstallCommand extends AbstractInstallConsole
 {
+  /**
+   * {@inheritDoc}
+   */
   protected function isTargetOption()
   {
     return false;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   protected function getDownloadExtension()
   {
     return null;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   protected function getDownloadFile()
   {
     if (empty($this->_downloadFile))
@@ -32,6 +50,11 @@ class GithubInstallCommand extends AbstractDownloadConsole
     return $this->_downloadFile;
   }
 
+  /**
+   * Sets the command name and adds source argument as well as the repo and file options.
+   *
+   * @return void
+   */
   protected function configure()
   {
     parent::configure();
@@ -43,6 +66,14 @@ class GithubInstallCommand extends AbstractDownloadConsole
     ;
   }
 
+  /**
+   * Automatically sets the repo and file options from the source argument, and vice versa.
+   *
+   * @param InputInterface  $input
+   * @param OutputInterface $output
+   *
+   * @return void
+   */
   protected function interact(InputInterface $input, OutputInterface $output)
   {
     if ($src = $input->getArgument('source'))
@@ -67,6 +98,15 @@ class GithubInstallCommand extends AbstractDownloadConsole
     }
   }
 
+  /**
+   * Performs a check to determine if the file should be downloaded & installed, downloads, extracts, verifies source,
+   * installs, verifies the installed application, then cleans up.
+   *
+   * @param InputInterface  $input
+   * @param OutputInterface $output
+   *
+   * @return int
+   */
   protected function execute(InputInterface $input, OutputInterface $output)
   {
     // Get Current Version
@@ -158,7 +198,7 @@ class GithubInstallCommand extends AbstractDownloadConsole
   }
 
   /**
-   * @return SemanticVersion|null
+   * {@inheritDoc}
    */
   protected function getInstalledVersion()
   {
@@ -170,12 +210,17 @@ class GithubInstallCommand extends AbstractDownloadConsole
     return null;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   protected function isInstalled()
   {
     return is_file($this->getDestination());
   }
 
   /**
+   * Returns the target version by polling the GitHub repo for the most recent release.
+   *
    * @return SemanticVersion|null
    */
   protected function getTargetVersion()
@@ -212,22 +257,37 @@ class GithubInstallCommand extends AbstractDownloadConsole
     return null;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   protected function getDestination()
   {
     return $this->io()->getArgument('destination');
   }
 
+  /**
+   * Returns the repo name from the 'repo' option, typically username/repo
+   *
+   * @return string
+   */
   protected function getRepo()
   {
     return $this->io()->getOption('repo');
   }
 
+  /**
+   * Returns the release URL on GitHub for the source repo name given at runtime.
+   *
+   * @return string
+   */
   protected function getReleaseUrl()
   {
     return sprintf('https://api.github.com/repos/%s/releases/latest', $this->getRepo());
   }
 
   /**
+   * Returns the download URL on Github for the file & source repo name given at runtime.
+   *
    * @return string
    */
   protected function getDownloadUrl()
@@ -238,16 +298,33 @@ class GithubInstallCommand extends AbstractDownloadConsole
     return sprintf('https://github.com/%s/releases/download/%s/%s', $this->getRepo(), $ver->getRaw(), $this->io()->getOption('file'));
   }
 
+  /**
+   * Returns the etag from the last access of the release URL.
+   *
+   * @return false|string|null
+   */
   protected function getCachedEtag()
   {
     return $this->getCachedFile($this->getFilename('etag'));
   }
 
+  /**
+   * Returns cached data from the last access of the release URL.
+   *
+   * @return false|string|null
+   */
   protected function getCachedData()
   {
     return $this->getCachedFile($this->getFilename('ver'));
   }
 
+  /**
+   * Returns the expected filename in the cache for the given suffix.
+   *
+   * @param string $suffix
+   *
+   * @return string
+   */
   protected function getFilename($suffix)
   {
     return sprintf('github.%s.%s', str_replace('/', '.', $this->getRepo()), $suffix);

@@ -13,13 +13,21 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-
+/**
+ * Base class for install commands.
+ *
+ * @author  AMJones <am@jonesiscoding.com>
+ * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
+ *
+ * @package DevCoding\Jss\Easy\Command\Download
+ */
 abstract class AbstractInstallConsole extends AbstractMacConsole
 {
   const CONTINUE = -1;
 
   /** @var string */
   protected $_cacheDir;
+  /** @var string */
   protected $_downloadFile;
   /** @var SemanticVersion */
   protected $_target;
@@ -27,17 +35,25 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
   protected $_recipe;
 
   /**
+   * Must return TRUE for commands that may use the --target option.
+   *
    * @return bool
    */
   abstract protected function isTargetOption();
 
+  /**
+   * Must return the lowercase extension expected in the download file for the child install command.
+   *
+   * @return string
+   */
   abstract protected function getDownloadExtension();
 
-  protected function isAllowUserOption()
-  {
-    return false;
-  }
-
+  /**
+   * Adds the destination argument and the installed, overwrite, timeout, and target options.  Child commands MUST run
+   * parent::configure().
+   *
+   * @return void
+   */
   protected function configure()
   {
     $this
@@ -55,6 +71,14 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
     parent::configure();
   }
 
+  /**
+   * Automatically populates the 'installed' option based on the destination option, if set.
+   *
+   * @param InputInterface  $input
+   * @param OutputInterface $output
+   *
+   * @return void
+   */
   protected function interact(InputInterface $input, OutputInterface $output)
   {
     if ($dest = $input->getArgument('destination'))
@@ -69,6 +93,15 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
     }
   }
 
+  /**
+   * Verifies that the installer command did the proper job by checking that the destination exists and, if the
+   * destination is an application bundle, that it is the proper version.
+   *
+   * @param InputInterface  $input
+   * @param OutputInterface $output
+   *
+   * @return int
+   */
   protected function executeVerify(InputInterface $input, OutputInterface $output)
   {
     // Verify Installation
@@ -104,10 +137,13 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
   }
 
   /**
+   * Determines if the installer command should download and install the download file based on the installed and
+   * current versions given.
+   *
    * @param InputInterface  $input
    * @param OutputInterface $output
    *
-   * @return int
+   * @return int -1 implies continue, 1 implies error, 0 implies success without need to continue
    * @noinspection PhpUnusedParameterInspection
    */
   protected function executeUpgradeCheck(InputInterface $input, OutputInterface $output)
@@ -143,10 +179,12 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
   }
 
   /**
+   * Evaluates whether the installer command should overwrite an already installed destination.
+   *
    * @param InputInterface  $input
    * @param OutputInterface $output
    *
-   * @return int
+   * @return int -1 implies continue, 1 implies error, 0 implies success without need to continue
    * @noinspection PhpUnusedParameterInspection
    */
   protected function executeOverwriteCheck(InputInterface $input, OutputInterface $output)
@@ -172,10 +210,12 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
   }
 
   /**
+   * Downloads the installer file from the URL given at runtime.
+   *
    * @param InputInterface  $input
    * @param OutputInterface $output
    *
-   * @return int
+   * @return int -1 implies success & continue, 1 implies error, 0 implies success without need to continue
    * @noinspection PhpUnusedParameterInspection
    */
   protected function executeDownload(InputInterface $input, OutputInterface $output)
@@ -201,6 +241,14 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
     return self::CONTINUE;
   }
 
+  /**
+   * @return false
+   */
+  protected function isAllowUserOption()
+  {
+    return false;
+  }
+
   // region //////////////////////////////////////////////// Information Methods
 
   /**
@@ -219,7 +267,7 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
   }
 
   /**
-   * Determines if the destination is an application bundle.  If the destination isn't present, guesses based on
+   * Evaluates if the destination is an application bundle.  If the destination isn't present, guesses based on
    * the extension.
    *
    * @return bool
@@ -240,7 +288,7 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
   }
 
   /**
-   * Determines if the given path is an application bundle.
+   * Evaluates if the given path is an application bundle.
    *
    * @param string $path
    *
@@ -251,6 +299,11 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
     return is_dir($path) && file_exists($path.'/Contents/Info.plist');
   }
 
+  /**
+   * Evaluates whether the destination is installed.
+   *
+   * @return bool
+   */
   protected function isInstalled()
   {
     return ($this->isApp()) ? is_dir($this->getDestination()) : is_file($this->getDestination());
@@ -261,6 +314,8 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
   // region //////////////////////////////////////////////// Version Methods
 
   /**
+   * Returns the target version object based on the option given at runtime.
+   *
    * @return SemanticVersion|null
    */
   protected function getTargetVersion()
@@ -277,6 +332,9 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
   }
 
   /**
+   * Returns the installed version object based on the option given at runtime, or if the destination is an application
+   * bundle, the ShortVersionString from the Info.plist.
+   *
    * @return SemanticVersion|null
    */
   protected function getInstalledVersion()
@@ -287,13 +345,15 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
     }
     elseif ($this->isAppBundle($this->getDestination()))
     {
-      return (new MacApplication($this->getDestination()))->getShortVersion();
+      return new SemanticVersion($this->getRecipe()->getInstalledVersion());
     }
 
     return null;
   }
 
   /**
+   * Evaluates whether the given application or version is a match for the version at the destination.
+   *
    * @param SemanticVersion|MacApplication $app_or_ver
    *
    * @return bool
@@ -308,6 +368,8 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
   }
 
   /**
+   * Evaluates whether the given application or version is greater than the installed version.
+   *
    * @param SemanticVersion|MacApplication $app_or_ver
    *
    * @return bool
@@ -321,6 +383,8 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
   }
 
   /**
+   * Sets the target version for this command, for use in verifying the installation.
+   *
    * @param SemanticVersion|string $target
    *
    * @return $this
@@ -415,6 +479,7 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
    * @param $file
    *
    * @noinspection DuplicatedCode
+   *
    * @return bool
    */
   protected function getDownload($url, $file)
@@ -449,6 +514,7 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
    * @param null $etag
    *
    * @noinspection DuplicatedCode
+   *
    * @return array
    */
   protected function getUrl($url, $default = null, $etag = null)

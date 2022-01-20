@@ -10,33 +10,43 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ZipInstallCommand
+ * Command to install an application or binary file from a ZIP. Verifies that the ZIP should be downloaded, then
+ * downloads, extracts, verifies source, installs, and cleans up both extracted files and downloaded files.
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  *
  * @package DevCoding\Jss\Easy\Command\Download
  */
-class ZipInstallCommand extends AbstractArchiveDownloadConsole
+class ZipInstallCommand extends AbstractArchiveInstallConsole
 {
   /**
    * @var string[]
    */
+  /** @var string[] an array of unzipped files and extract destinations */
   protected $unzipped;
 
+  /**
+   * {@inheritDoc}
+   */
   protected function isTargetOption()
   {
     return true;
   }
 
   /**
-   * @return string
+   * {@inheritDoc}
    */
   protected function getDownloadExtension()
   {
     return 'zip';
   }
 
+  /**
+   * Sets the command name and adds the URL argument.
+   *
+   * @return void
+   */
   protected function configure()
   {
     parent::configure();
@@ -44,6 +54,9 @@ class ZipInstallCommand extends AbstractArchiveDownloadConsole
     $this->setName('install:zip')->addArgument('url', InputArgument::REQUIRED);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   protected function executeExtract(InputInterface $input, OutputInterface $output)
   {
     $this->io()->msg('Decompressing ZIP File', 50);
@@ -64,6 +77,9 @@ class ZipInstallCommand extends AbstractArchiveDownloadConsole
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   protected function executeCleanup(InputInterface $input, OutputInterface $output)
   {
     $this->io()->msg('Cleaning Up', 50);
@@ -100,6 +116,8 @@ class ZipInstallCommand extends AbstractArchiveDownloadConsole
   }
 
   /**
+   * Returns the source application bundle, package file, or path, as determined from the extracted download file.
+   *
    * @return string|null
    * @throws ZipExtractException
    */
@@ -111,6 +129,8 @@ class ZipInstallCommand extends AbstractArchiveDownloadConsole
   }
 
   /**
+   * Returns the source application bundle, package file, or path from the given directory.
+   *
    * @param string $volume
    *
    * @return PkgFile|MacApplication|string|null
@@ -129,6 +149,8 @@ class ZipInstallCommand extends AbstractArchiveDownloadConsole
   }
 
   /**
+   * Attempts to find a PKG installer file in the given volume, and returns a PkgFile object.
+   *
    * @param string $volume
    *
    * @return PkgFile|null
@@ -147,6 +169,8 @@ class ZipInstallCommand extends AbstractArchiveDownloadConsole
   }
 
   /**
+   * Attempts to find an application bundle that matches the destination in the given volume, and returns the object.
+   *
    * @param string $dir
    *
    * @return MacApplication|null
@@ -165,6 +189,8 @@ class ZipInstallCommand extends AbstractArchiveDownloadConsole
   }
 
   /**
+   * Attempts to find the destination filename in the given volume, and returns the absolute path.
+   *
    * @param string $dir
    *
    * @return mixed|null
@@ -185,6 +211,9 @@ class ZipInstallCommand extends AbstractArchiveDownloadConsole
   }
 
   /**
+   * Unzips the given zipfile into a temporary directory, and returns the path to that directory.  If the zip file has
+   * already been extracted during this command run, returns the path without re-extraction.
+   *
    * @param string $zipFile
    *
    * @return string|null

@@ -9,24 +9,41 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Command to install an application or binary file from a DMG. Verifies that the DMG should be downloaded, then
+ * downloads, mounts, verifies source, installs, unmounts, and cleans up.
+ *
+ * @author  AMJones <am@jonesiscoding.com>
+ * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
+ *
+ * @package DevCoding\Jss\Easy\Command\Download
+ */
 class DmgInstallCommand extends AbstractArchiveInstallConsole
 {
-  /** @var array */
+  /** @var array An array of mounted DMG files */
   protected $mounts;
 
+  /**
+   * {@inheritDoc}
+   */
   protected function isTargetOption()
   {
     return true;
   }
 
   /**
-   * @return string
+   * {@inheritDoc}
    */
   protected function getDownloadExtension()
   {
     return 'dmg';
   }
 
+  /**
+   * Sets the command name and adds the URL argument.
+   *
+   * @return void
+   */
   protected function configure()
   {
     parent::configure();
@@ -34,6 +51,9 @@ class DmgInstallCommand extends AbstractArchiveInstallConsole
     $this->setName('install:dmg')->addArgument('url', InputArgument::REQUIRED);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   protected function executeCleanup(InputInterface $input, OutputInterface $output)
   {
     $this->io()->msg('Cleaning Up', 50);
@@ -64,6 +84,9 @@ class DmgInstallCommand extends AbstractArchiveInstallConsole
     return $retval;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   protected function executeExtract(InputInterface $input, OutputInterface $output)
   {
     $this->io()->msg('Mounting DMG File', 50);
@@ -97,12 +120,9 @@ class DmgInstallCommand extends AbstractArchiveInstallConsole
     return self::CONTINUE;
   }
 
-  protected function isInstallNeeded($version)
-  {
-    return !$this->isInstalled() || $this->isOverwrite() || $this->isVersionGreater($version);
-  }
-
   /**
+   * Returns the source application bundle, package file, or path, as determined from the extracted download file.
+   *
    * @return PkgFile|MacApplication|string|null
    *
    * @throws DmgMountException
@@ -115,6 +135,8 @@ class DmgInstallCommand extends AbstractArchiveInstallConsole
   }
 
   /**
+   * Attempts to find a PKG installer file, application bundle, or other destination file match within the given volume.
+   *
    * @param string $volume
    *
    * @return PkgFile|MacApplication|string|null
@@ -133,6 +155,8 @@ class DmgInstallCommand extends AbstractArchiveInstallConsole
   }
 
   /**
+   * Attempts to find a PKG installer file in the given volume, and returns a PkgFile object.
+   *
    * @param string $volume
    *
    * @return PkgFile|null
@@ -151,6 +175,8 @@ class DmgInstallCommand extends AbstractArchiveInstallConsole
   }
 
   /**
+   * Attempts to find an application bundle that matches the destination in the given volume, and returns the object.
+   *
    * @param string $volume
    *
    * @return MacApplication|null
@@ -168,6 +194,13 @@ class DmgInstallCommand extends AbstractArchiveInstallConsole
     return null;
   }
 
+  /**
+   * Attempts to find the destination filename in the given volume, and returns the absolute path.
+   *
+   * @param string $volume
+   *
+   * @return string|null
+   */
   protected function getMatchFromVolume($volume)
   {
     $destFile = pathinfo($this->getDestination(), PATHINFO_BASENAME);
@@ -183,6 +216,14 @@ class DmgInstallCommand extends AbstractArchiveInstallConsole
     return null;
   }
 
+  /**
+   * Evaluates whether the given DMG file is mounted, then unmounts the DMG if needed.
+   *
+   * @param string $dmgFile the absolute path to the DMG
+   * @param string $error   any error encountered during the unmount process
+   *
+   * @return bool TRUE if successful, FALSE if not
+   */
   protected function unmount($dmgFile, &$error)
   {
     if (!empty($this->mounts[$dmgFile]))
@@ -223,6 +264,9 @@ class DmgInstallCommand extends AbstractArchiveInstallConsole
   }
 
   /**
+   * Evaluates whether the given DMG file is already mounted, then mounts the DMG if needed.  Returns the volume and
+   * device in an array of ['dev' => <device>, 'volume' => <volume>]
+   *
    * @param string $dmgFile
    *
    * @return array
