@@ -1,11 +1,11 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 
 /**
- * Installer configuration class for Thunderbird. Current version methodology and download URL adapted from
+ * Installer recipe class for Thunderbird. Current version methodology and download URL adapted from
  * the Firefox installer script by Joe Farage, which can no longer be linked to on the Jamf website.
  *
  * @see     https://thunderbird.net
@@ -13,9 +13,9 @@ use DevCoding\Jss\Easy\Helper\DownloadHelper;
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  *
- * @package DevCoding\Jss\Easy\Object\Installer
+ * @package DevCoding\Jss\Easy\Object\Recipe
  */
-class Thunderbird extends BaseInstaller
+class Thunderbird extends AbstractRecipe
 {
   public function getName()
   {

@@ -1,17 +1,17 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use DevCoding\Mac\Objects\SemanticVersion;
 
 /**
- * Installer configuration class for Mozilla Firefox Developer Edition
+ * Installer recipe class for Mozilla Firefox Developer Edition
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class FirefoxDeveloper extends BaseInstaller
+class FirefoxDeveloper extends AbstractRecipe
 {
   protected $download;
 

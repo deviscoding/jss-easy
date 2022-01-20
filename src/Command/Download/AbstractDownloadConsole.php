@@ -2,8 +2,8 @@
 
 namespace DevCoding\Jss\Easy\Command\Download;
 
-use DevCoding\Jss\Easy\Object\Installer\BaseInstaller;
-use DevCoding\Jss\Easy\Object\Installer\GenericInstaller;
+use DevCoding\Jss\Easy\Object\Recipe\AbstractRecipe;
+use DevCoding\Jss\Easy\Object\Recipe\GenericRecipe;
 use DevCoding\Mac\Command\AbstractMacConsole;
 use DevCoding\Mac\Objects\MacApplication;
 use DevCoding\Mac\Objects\SemanticVersion;
@@ -22,8 +22,8 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
   protected $_downloadFile;
   /** @var SemanticVersion */
   protected $_target;
-  /** @var GenericInstaller */
-  protected $_installer;
+  /** @var GenericRecipe */
+  protected $_recipe;
 
   /**
    * @return bool
@@ -114,7 +114,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
     if (!$this->isOverwrite())
     {
       // Check Vs. Current if Provided
-      $installer = $this->getInstaller();
+      $installer = $this->getRecipe();
       $installed = $installer->getInstalledVersion();
       $current   = $installer->getCurrentVersion();
 
@@ -336,13 +336,13 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
   // region //////////////////////////////////////////////// Input/Output Methods
 
   /**
-   * @return BaseInstaller
+   * @return AbstractRecipe
    */
-  protected function getInstaller()
+  protected function getRecipe()
   {
-    if (!isset($this->_installer))
+    if (!isset($this->_recipe))
     {
-      $this->_installer = new GenericInstaller(
+      $this->_recipe = new GenericRecipe(
           $this->getDevice(),
           $this->io()->getArgument('destination'),
           $this->io()->getArgument('url'),
@@ -351,7 +351,7 @@ abstract class AbstractDownloadConsole extends AbstractMacConsole
       );
     }
 
-    return $this->_installer;
+    return $this->_recipe;
   }
 
   /**

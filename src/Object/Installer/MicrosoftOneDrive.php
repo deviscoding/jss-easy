@@ -1,15 +1,15 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 /**
- * Installer configuration class for Microsoft OneDrive. Credit to MacAdmins.software for the link id, current version
+ * Installer recipe class for Microsoft OneDrive. Credit to MacAdmins.software for the link id, current version
  * information, and package name.
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class MicrosoftOneDrive extends MicrosoftInstaller
+class MicrosoftOneDrive extends AbstractMicrosoftRecipe
 {
   public function getName()
   {

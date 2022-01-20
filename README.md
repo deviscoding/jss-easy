@@ -57,7 +57,7 @@ All commands can take a `--json` flag which will change the results to JSON.  Ad
 ## Install Commands
 These commands help with the download and installation of executables and applications.  Which command is the most useful may depend on the source and format of the download.
 
-### Configured Installer
+### Recipe Installer
 Installs a pre-configured application, using the latest version available.  Only a limited number of applications are
 available using this command, as detailed below.  Application names and details remain subject to the license of the
 author, license issuing party, or copyright holder as is appropriate.
@@ -68,9 +68,9 @@ For most applications, nothing is downloaded if the _current_ version of the app
 
 Example usage:
 
-    jez install:configured <slug>
+    jez install:recipe <slug>
 
-| Application | Installer Slug |
+| Application | Recipe Slug |
 |--|--|
 | Adobe Reader DC | adobe-reader-dc |
 | Basecamp3 | basecamp |

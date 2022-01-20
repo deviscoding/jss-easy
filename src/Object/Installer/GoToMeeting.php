@@ -1,21 +1,21 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Command\Base\Traits\ShellTrait;
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 
 /**
- * Installer configuration class for Citrix GotoMeeting
+ * Installer recipe class for Citrix GotoMeeting
  *
  * @see     https://gotomeeting.com
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  *
- * @package DevCoding\Jss\Easy\Object\Installer
+ * @package DevCoding\Jss\Easy\Object\Recipe
  */
-class GoToMeeting extends BaseInstaller
+class GoToMeeting extends AbstractRecipe
 {
   use ShellTrait;
 

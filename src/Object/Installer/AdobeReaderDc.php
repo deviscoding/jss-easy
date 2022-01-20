@@ -1,18 +1,18 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Command\Base\Traits\ShellTrait;
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use DevCoding\Mac\Objects\SemanticVersion;
 
 /**
- * Installer configuration class for Adobe Acrobat Reader DC.
+ * Installer recipe class for Adobe Acrobat Reader DC.
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class AdobeReaderDc extends BaseInstaller
+class AdobeReaderDc extends AbstractRecipe
 {
   use ShellTrait;
 

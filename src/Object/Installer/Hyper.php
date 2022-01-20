@@ -1,15 +1,15 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 /**
- * Installer configuration class for Hyper.
+ * Installer recipe class for Hyper.
  *
  * @see     https://github.com/vercel/hyper
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class Hyper extends GitHubInstaller
+class Hyper extends AbstractGitHubRecipe
 {
   protected function getRepo()
   {

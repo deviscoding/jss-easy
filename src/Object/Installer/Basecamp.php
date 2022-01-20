@@ -1,18 +1,18 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Command\Base\Traits\ShellTrait;
 
 /**
- * Installer configuration class for Basecamp3
+ * Installer recipe class for Basecamp3
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  *
- * @package DevCoding\Jss\Easy\Object\Installer
+ * @package DevCoding\Jss\Easy\Object\Recipe
  */
-class Basecamp extends BaseInstaller
+class Basecamp extends AbstractRecipe
 {
   use ShellTrait;
 

@@ -1,20 +1,20 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Command\Base\Traits\ShellTrait;
 
 /**
- * Installer configuration class for OpenVPN Connect
+ * Installer recipe class for OpenVPN Connect
  *
  * @see     https://openvpn.net/vpn-client/
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  *
- * @package DevCoding\Jss\Easy\Object\Installer
+ * @package DevCoding\Jss\Easy\Object\Recipe
  */
-class OpenVpnConnect extends BaseInstaller
+class OpenVpnConnect extends AbstractRecipe
 {
   use ShellTrait;
 

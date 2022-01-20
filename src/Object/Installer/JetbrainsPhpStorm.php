@@ -1,19 +1,19 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Command\Base\Traits\ShellTrait;
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use DevCoding\Mac\Objects\MacApplication;
 
 /**
- * Installer configuration class for JetBrains PhpStorm.
+ * Installer recipe class for JetBrains PhpStorm.
  *
  * @see     https://www.jetbrains.com/phpstorm/
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class JetbrainsPhpStorm extends BaseInstaller
+class JetbrainsPhpStorm extends AbstractRecipe
 {
   use ShellTrait;
 

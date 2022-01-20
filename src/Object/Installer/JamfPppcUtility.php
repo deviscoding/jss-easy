@@ -1,15 +1,15 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 /**
- * Installer configuration class for Jamf PPPC Utility..
+ * Installer recipe class for Jamf PPPC Utility..
  *
  * @see     https://github.com/jamf/PPPC-Utility
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class JamfPppcUtility extends GitHubInstaller
+class JamfPppcUtility extends AbstractGitHubRecipe
 {
   protected function getRepo()
   {

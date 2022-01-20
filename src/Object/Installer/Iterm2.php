@@ -1,18 +1,18 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Command\Base\Traits\ShellTrait;
 use DevCoding\Mac\Objects\MacApplication;
 
 /**
- * Installer configuration class for iTerm2.
+ * Installer recipe class for iTerm2.
  *
  * @see     https://iterm2.com/
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class Iterm2 extends BaseInstaller
+class Iterm2 extends AbstractRecipe
 {
   use ShellTrait;
 

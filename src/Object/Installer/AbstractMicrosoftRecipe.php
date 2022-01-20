@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Command\Base\Traits\ShellTrait;
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
@@ -8,12 +8,12 @@ use DevCoding\Mac\Objects\MacApplication;
 use DevCoding\Mac\Objects\SemanticVersion;
 
 /**
- * Abstract Installer configuration class for Microsoft applications.
+ * Abstract Installer recipe class for Microsoft applications.
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-abstract class MicrosoftInstaller extends BaseInstaller
+abstract class AbstractMicrosoftRecipe extends AbstractRecipe
 {
   use ShellTrait;
 

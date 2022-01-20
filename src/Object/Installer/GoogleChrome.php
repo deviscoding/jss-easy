@@ -1,17 +1,17 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use DevCoding\Mac\Objects\MacApplication;
 
 /**
- * Installer configuration class for Google Chrome
+ * Installer recipe class for Google Chrome
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class GoogleChrome extends BaseInstaller
+class GoogleChrome extends AbstractRecipe
 {
   protected $current;
 

@@ -1,18 +1,18 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
- * Installer configuration class for SourceTree.
+ * Installer recipe class for SourceTree.
  *
  * @see     https://sourcetreeapp.com
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class Sourcetree extends BaseInstaller
+class Sourcetree extends AbstractRecipe
 {
   /** @var string download url */
   protected $download;

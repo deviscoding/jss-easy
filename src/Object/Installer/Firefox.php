@@ -1,17 +1,17 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 
 /**
- * Installer configuration class for Mozilla Firefox.  Current version methodology and download URL adapted from
+ * Installer recipe class for Mozilla Firefox.  Current version methodology and download URL adapted from
  * a script by Joe Farage, the link to which no longer functions on the Jamf website.
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class Firefox extends BaseInstaller
+class Firefox extends AbstractRecipe
 {
   public function getName()
   {

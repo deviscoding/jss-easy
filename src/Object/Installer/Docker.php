@@ -1,18 +1,18 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
- * Installer configuration class for Docker Desktop for Mac.
+ * Installer recipe class for Docker Desktop for Mac.
  *
  * @see     https://www.docker.com/products/docker-desktop
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class Docker extends BaseInstaller
+class Docker extends AbstractRecipe
 {
   /** @var string */
   protected $version;

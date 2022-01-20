@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Mac\Objects\MacApplication;
 use DevCoding\Mac\Objects\MacDevice;
@@ -12,9 +12,9 @@ use DevCoding\Mac\Objects\SemanticVersion;
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  *
- * @package DevCoding\Jss\Easy\Object\Installer
+ * @package DevCoding\Jss\Easy\Object\Recipe
  */
-abstract class BaseInstaller
+abstract class AbstractRecipe
 {
   /** @var MacDevice */
   protected $device;

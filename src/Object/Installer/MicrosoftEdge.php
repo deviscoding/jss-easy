@@ -1,15 +1,15 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 /**
- * Installer configuration class for Microsoft Edge. Credit to MacAdmins.software for the link id, current version
+ * Installer recipe class for Microsoft Edge. Credit to MacAdmins.software for the link id, current version
  * information, and package name.
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class MicrosoftEdge extends MicrosoftInstaller
+class MicrosoftEdge extends AbstractMicrosoftRecipe
 {
   public function getName()
   {

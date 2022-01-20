@@ -1,18 +1,18 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 /**
- * Installer configuration class for Platypus
+ * Installer recipe class for Platypus
  *
  * @see     https://github.com/sveinbjornt/Platypus
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  *
- * @package DevCoding\Jss\Easy\Object\Installer
+ * @package DevCoding\Jss\Easy\Object\Recipe
  */
-class Platypus extends GitHubInstaller
+class Platypus extends AbstractGitHubRecipe
 {
   protected function getRepo()
   {

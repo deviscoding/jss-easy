@@ -1,19 +1,19 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use DevCoding\Mac\Objects\SemanticVersion;
 
 /**
- * Installer configuration class for Slack.
+ * Installer recipe class for Slack.
  *
  * @see     https://skype.com
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class Skype extends BaseInstaller
+class Skype extends AbstractRecipe
 {
   public function getName()
   {

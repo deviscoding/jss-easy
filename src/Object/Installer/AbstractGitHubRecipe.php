@@ -1,6 +1,6 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use DevCoding\Mac\Objects\SemanticVersion;
@@ -10,9 +10,9 @@ use DevCoding\Mac\Objects\SemanticVersion;
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
- * @package DevCoding\Jss\Easy\Object\Installer
+ * @package DevCoding\Jss\Easy\Object\Recipe
  */
-abstract class GitHubInstaller extends BaseInstaller
+abstract class AbstractGitHubRecipe extends AbstractRecipe
 {
   /** @var SemanticVersion */
   protected $version;

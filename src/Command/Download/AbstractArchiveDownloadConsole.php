@@ -94,7 +94,7 @@ abstract class AbstractArchiveDownloadConsole extends AbstractDownloadConsole
         $this->io()->msg('Verifying File', 50);
         if ($source instanceof MacApplication)
         {
-          if ($this->getInstaller()->isMatch($source))
+          if ($this->getRecipe()->isMatch($source))
           {
             $target = $this->getTargetVersion();
             $this->successbg($target ?? 'MATCH');

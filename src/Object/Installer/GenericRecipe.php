@@ -1,13 +1,13 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use DevCoding\Mac\Objects\MacApplication;
 use DevCoding\Mac\Objects\MacDevice;
 use DevCoding\Mac\Objects\SemanticVersion;
 
-class GenericInstaller extends BaseInstaller
+class GenericRecipe extends AbstractRecipe
 {
   /** @var string */
   protected $path;

@@ -1,18 +1,18 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
- * Installer configuration class for Visual Studio Code.
+ * Installer recipe class for Visual Studio Code.
  *
  * @see     https://code.visualstudio.com/
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class VisualStudioCode extends BaseInstaller
+class VisualStudioCode extends AbstractRecipe
 {
   protected $version;
 

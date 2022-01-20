@@ -1,18 +1,18 @@
 <?php
 
-namespace DevCoding\Jss\Easy\Object\Installer;
+namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Jss\Easy\Helper\DownloadHelper;
 
 /**
- * Installer configuration class for Slack.
+ * Installer recipe class for Slack.
  *
  * @see     https://slack.com
  *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  */
-class Slack extends BaseInstaller
+class Slack extends AbstractRecipe
 {
   public function getName()
   {

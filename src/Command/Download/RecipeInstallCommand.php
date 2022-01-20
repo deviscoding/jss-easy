@@ -3,7 +3,7 @@
 namespace DevCoding\Jss\Easy\Command\Download;
 
 use DevCoding\Helper\ClassHelper;
-use DevCoding\Jss\Easy\Object\Installer\BaseInstaller;
+use DevCoding\Jss\Easy\Object\Recipe\AbstractRecipe;
 use DevCoding\Mac\Command\AbstractMacConsole;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -12,17 +12,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
+ * Installs the given application using a recipe class.
+ *
  * @author  AMJones <am@jonesiscoding.com>
  * @license https://github.com/deviscoding/jss-helper/blob/main/LICENSE
  *
  * @package DevCoding\Jss\Easy\Command\Download
  */
-class ConfiguredInstallCommand extends AbstractMacConsole
+class RecipeInstallCommand extends AbstractMacConsole
 {
   protected function configure()
   {
-    $this->setName('install:configured')
-         ->addArgument('name', InputArgument::REQUIRED, 'The configured application name.')
+    $this->setName('install:recipe')
+         ->setAliases(['install:configured'])
+         ->addArgument('name', InputArgument::REQUIRED, 'The recipe name for the application.')
     ;
 
     parent::configure();
@@ -47,7 +50,7 @@ class ConfiguredInstallCommand extends AbstractMacConsole
 
     $this->io()->msg('Retrieving Configuration', 50);
     $alternates = [];
-    if ($Installer = $this->getInstaller($name, $alternates))
+    if ($Installer = $this->getRecipe($name, $alternates))
     {
       $this->successbg($Installer->getName());
 
@@ -103,7 +106,7 @@ class ConfiguredInstallCommand extends AbstractMacConsole
     return self::EXIT_ERROR;
   }
 
-  protected function getArguments(BaseInstaller $installer)
+  protected function getArguments(AbstractRecipe $installer)
   {
     if ($type = $installer->getInstallerType())
     {
@@ -132,11 +135,11 @@ class ConfiguredInstallCommand extends AbstractMacConsole
   }
 
   /**
-   * @param BaseInstaller $installer
+   * @param AbstractRecipe $installer
    *
    * @return Command|null
    */
-  protected function getCommand(BaseInstaller $installer)
+  protected function getCommand(AbstractRecipe $installer)
   {
     if ($type = $installer->getInstallerType())
     {
@@ -160,11 +163,11 @@ class ConfiguredInstallCommand extends AbstractMacConsole
   /**
    * @param string $name
    *
-   * @return BaseInstaller|null
+   * @return AbstractRecipe|null
    *
    * @throws \ReflectionException
    */
-  protected function getInstaller($name, &$alternates)
+  protected function getRecipe($name, &$alternates)
   {
     return ($fqcn = $this->getClass($name, $alternates)) ? new $fqcn($this->getDevice()) : null;
   }
@@ -180,7 +183,7 @@ class ConfiguredInstallCommand extends AbstractMacConsole
   {
     $class = str_replace([' ', '_', '-'], '', ucwords($name, ' _-'));
 
-    $rClass = new \ReflectionClass(BaseInstaller::class);
+    $rClass = new \ReflectionClass(AbstractRecipe::class);
     $nspace = $rClass->getNamespaceName();
     $fqcn   = $nspace.'\\'.$class;
 
