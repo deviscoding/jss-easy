@@ -95,10 +95,10 @@ class OsCommand extends AbstractInfoConsole
   protected function getSummary()
   {
     return [
-        self::VERSION      => $this->getVersion(),
-        self::CACHE        => $this->getCache(),
-        self::SUS          => $this->getOs()->getSoftwareUpdateCatalogUrl(),
-        self::CONSOLE      => $this->getConsole()
+        self::VERSION => $this->getVersion(),
+        self::CACHE   => $this->getCache(),
+        self::SUS     => $this->getOs()->getSoftwareUpdateCatalogUrl(),
+        self::CONSOLE => $this->getConsole(),
     ];
   }
 
@@ -224,6 +224,7 @@ class OsCommand extends AbstractInfoConsole
 
   /**
    * @return string
+   *
    * @throws \Exception
    */
   protected function getOpenCommand()

@@ -92,9 +92,7 @@ class DmgInstallCommand extends AbstractArchiveInstallConsole
     $this->io()->msg('Mounting DMG File', 50);
     try
     {
-      $mount  = $this->mount($this->getDownloadFile());
-      $volume = $mount['volume'];
-
+      $this->mount($this->getDownloadFile());
       $this->successbg('SUCCESS');
     }
     catch (DmgMountException $e)

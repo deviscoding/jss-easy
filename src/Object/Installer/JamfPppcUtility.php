@@ -3,7 +3,7 @@
 namespace DevCoding\Jss\Easy\Object\Recipe;
 
 /**
- * Installer recipe class for Jamf PPPC Utility..
+ * Installer recipe class for Jamf PPPC Utility.
  *
  * @see     https://github.com/jamf/PPPC-Utility
  * @author  AMJones <am@jonesiscoding.com>

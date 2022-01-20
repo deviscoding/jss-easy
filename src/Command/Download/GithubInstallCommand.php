@@ -286,7 +286,7 @@ class GithubInstallCommand extends AbstractInstallConsole
   }
 
   /**
-   * Returns the download URL on Github for the file & source repo name given at runtime.
+   * Returns the download URL on GitHub for the file & source repo name given at runtime.
    *
    * @return string
    */

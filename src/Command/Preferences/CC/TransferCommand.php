@@ -80,6 +80,7 @@ class TransferCommand extends AbstractMacConsole
    * @param OutputInterface $output
    *
    * @return void
+   *
    * @throws \Exception
    */
   public function validate(InputInterface $input, OutputInterface $output)
@@ -131,7 +132,7 @@ class TransferCommand extends AbstractMacConsole
     $from = $this->io()->getOption('from');
     $to   = $this->io()->getOption('to');
 
-    $this->io()->msg('Locating Source Application',50);
+    $this->io()->msg('Locating Source Application', 50);
     if ($src = $this->getAdobeApplication($app, $from))
     {
       $this->io()->successln('[DONE]');
@@ -299,6 +300,7 @@ class TransferCommand extends AbstractMacConsole
    * @param string[] $replace
    *
    * @return void
+   *
    * @throws \Exception
    */
   protected function copyPreferences($srcPrefs, $search, $replace)

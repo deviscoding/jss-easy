@@ -3,7 +3,6 @@
 namespace DevCoding\Jss\Easy\Object\Recipe;
 
 use DevCoding\Command\Base\Traits\ShellTrait;
-use DevCoding\Jss\Easy\Helper\DownloadHelper;
 
 /**
  * Installer recipe class for Citrix GotoMeeting

@@ -80,7 +80,6 @@ class PkgInstallCommand extends AbstractInstallConsole
     {
       return self::EXIT_ERROR;
     }
-  }
 
     if (self::EXIT_SUCCESS === $retval && self::EXIT_SUCCESS === $this->executeCleanup($input, $output))
     {
@@ -104,6 +103,7 @@ class PkgInstallCommand extends AbstractInstallConsole
   {
     $pkgFile = $this->getDownloadFile();
     $this->io()->msg('Installing from PKG', 50);
+    $errors = null;
     if (!$this->installPkgFile($pkgFile, $errors))
     {
       $this->errorbg('error');

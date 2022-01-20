@@ -25,7 +25,7 @@ class ChownCommand extends AbstractMacConsole
 
   protected function execute(InputInterface $input, OutputInterface $output)
   {
-    $file = realpath($this->io()->getArgument('file'));
+    $file  = realpath($this->io()->getArgument('file'));
     $width = 50;
 
     $this->io()->blankln()->msg('Checking for User', $width);
