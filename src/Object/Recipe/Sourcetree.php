@@ -45,9 +45,24 @@ class Sourcetree extends AbstractRecipe
       if ($html = $this->getDownloadPageHtml())
       {
         $crawler = new Crawler($html);
-        $crawler = $crawler->filter('[data-label="Download for Mac OS X"]');
-        if ($crawler->count() > 0)
+        $script  = $crawler->filter('[type="text/x-component"]');
+        if ($script->count() > 0)
         {
+          foreach ($script as $item)
+          {
+            if ($json = json_decode($item->textContent, true))
+            {
+              if (isset($json['params']['macURL']))
+              {
+                $this->download = $json['params']['macURL'];
+              }
+            }
+          }
+        }
+
+        if (!isset($this->download))
+        {
+          $crawler = $crawler->filter('[data-label="Download for Mac OS X"]');
           if ($link = $crawler->attr('href'))
           {
             $this->download = $link;
