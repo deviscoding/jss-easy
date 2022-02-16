@@ -101,4 +101,3 @@ class Sourcetree extends AbstractRecipe
     return null;
   }
 }
-
