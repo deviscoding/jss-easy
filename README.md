@@ -136,6 +136,50 @@ Example usage:
 
 After the installation, the volume is unmounted, and the DMG file is removed.
 
+## Software Update Functionality
+**THIS FUNCTIONALITY SHOULD BE CONSIDERED BETA SOFTWARE AND SHOULD NOT BE USED IN PRODUCTION**
+
+Works with the built in `softwareupdate` command and your MDM to facilitate the installation of macOS software updates.  Adds the following functionality to the built in `softwareupdate` command:
+
+* Wait Condition Monitoring (similar to the Wait command documented below), including whether the SUS is available.
+* Can trigger a Jamf policy for the installation of updates rather than using `softwareupdate`
+* Can trigger a Jamf policy for the restart of a system, rather than using `softwareupdate` or `shutdown`.
+* Returns a non-zero exit code when a lack of disk space prevents installations.
+* Allows for Json output.
+* Can provide a simple count of updates to install.
+* Can provide a summary of relevant information to performing updates.
+* If running `softwareupdate` without user authentication is prevented, opens the Software Update Preference pane for the console user.
+
+## Installations (--install)
+
+**Apple Silicon Macs**
+
+If the computer is using Apple Silicon, the Software Update preference pane is opened if any updates are pending, and a console user is logged in.
+
+**Other Macs**
+
+If the `install-policy` option is provided, the Jamf Policy is used instead of running `softwareupdate` for the installations, otherwise the `softwareupdate` binary is utilized. When using the `softwareupdate` binary, all non-restart updates are installed individually, then any updates requiring a restart are installed in a batch.  This allows us to provide the maximum amount of feedback on the success or failure of updates installed.
+
+If the `restart-policy` option is provided, the Jamf Policy is sued instead of running `shutdown` for updates that require a restart or halt.  This allows for an authenticated restart on FileVault 2 enabled Macs.  If the `restart-policy` option is not provided, the `shutdown` binary is used to restart or halt the computer as needed for the updates that were installed.
+
+|Flags  | Purpose |  
+|--|--|  
+| install | Installs available updates |  
+| download | Downloads available updates |  
+| list | List available updates |
+| count | Provides a count of available updates |
+| summary | Provides a summary including counts (total updates, recommended, requiring restart, requiring halt), console username, content cache IP, SUS URL, free disk space, battery percentage, AC power, encryption status, presentation status, and SUS status. |
+| no-scan | Do not scan when listing or installing updates (use available updates previously scanned) |
+| skip-cpu | Do not wait for low CPU usage |
+| skip-power | Do not wait for AC power |
+| skip-user | Do not wait for console user logout |
+| skip-screen | Do not wait for screen availability |
+| wait | The number of seconds to wait for wait conditions.  Defaults to 60 seconds. |
+| install-policy | The trigger or ID for a Jamf Pro policy that installs updates using the Software Update payload. |
+| restart-policy | The trigger or ID for a Jamf Pro policy with no payload that forces a FileVault 2 authenticated restart. |
+| json | Show any output in JSON format. |
+| timeout | The amount of time in seconds that is allowed for any one `softwareupdate` command to complete.  Defaults to 7200 seconds (2 hours)
+
 ## Adobe Applications Functionality
 
 The Adobe commands can back up preferences for Adobe Creative Cloud applications, or transfer preferences between different _years_ of the same Creative Cloud application.

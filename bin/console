@@ -23,6 +23,7 @@ $command[] = new DevCoding\Jss\Easy\Command\Download\DmgInstallCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Download\ZipInstallCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Download\RecipeInstallCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Download\WaitCommand();
+$command[] = new DevCoding\Jss\Easy\Command\Download\SoftwareUpdateCommand();
 // Preference Commands
 $command[] = new DevCoding\Jss\Easy\Command\ChownCommand();
 $command[] = new DevCoding\Jss\Easy\Command\Preferences\MenuAddCommand();
