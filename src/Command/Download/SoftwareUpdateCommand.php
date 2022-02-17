@@ -81,7 +81,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     // Check for Updates unless --noscan
     if (!$this->isNoScan())
     {
-      $this->io()->msg('Finding available software', 40);
+      $this->io()->msg('Finding available software', 60);
       try
       {
         $Updates = $this->getUpdateList();
@@ -138,7 +138,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     else
     {
       // These only run if there are updates...
-      if ($count > 0)
+      if ($count == 0)
       {
         if ($this->isDownload())
         {
@@ -192,7 +192,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     $tests = $this->getTests();
     $wait  = $tests;
 
-    $this->io()->msg('Checking Wait Conditions');
+    $this->io()->msg('Checking Wait Conditions', 60);
 
     // Wait for X seconds for wait conditions...
     $seconds   = (int) $this->io()->getOption('wait') ?? 0;
@@ -230,12 +230,19 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       {
         foreach ($wait as $key => $value)
         {
-          $name = self::TESTS[$key] ?? strtoupper($key);
-          $this->io()->commentln(sprintf('  Waiting for %s', $name));
+          if ($value)
+          {
+            $name = self::TESTS[$key] ?? strtoupper($key);
+            $this->io()->commentln(sprintf('  Waiting for %s', $name));
+          }
         }
       }
 
       return self::EXIT_ERROR;
+    }
+    else
+    {
+      $this->io()->successln('[SUCCESS]');
     }
 
     return self::CONTINUE;
@@ -335,7 +342,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     if ($this->getDevice()->isAppleChip())
     {
       $error = 'Apple Silicon devices do not support automated downloads via softwareupdate.';
-      $this->io()->msg('Starting Download', 50);
+      $this->io()->msg('Starting Download', 60);
       $this->io()->errorln('ERROR');
       $this->io()->write('  '.$error);
 
@@ -355,7 +362,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       $retval  = self::EXIT_SUCCESS;
       foreach ($Updates as $macUpdate)
       {
-        $this->io()->info('Downloading '.$macUpdate->getName(), 50);
+        $this->io()->msg('Downloading '.$macUpdate->getName(), 60);
 
         $SU = $this->getSoftwareUpdateDriver(['no-scan' => true, 'download' => $macUpdate->getId()]);
         $SU->run();
@@ -406,19 +413,19 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     }
     else
     {
-      $this->io()->info('Total Updates', 50)->msgln($summary['count']);
-      $this->io()->info('Recommended Updates', 50)->msgln($summary['recommended']);
-      $this->io()->info('Updates Requiring Restart', 50)->msgln($summary['restart']);
-      $this->io()->info('Updates Requiring Shutdown', 50)->msgln($summary['shutdown']);
+      $this->io()->info('Total Updates', 60)->msgln($summary['count']);
+      $this->io()->info('Recommended Updates', 60)->msgln($summary['recommended']);
+      $this->io()->info('Updates Requiring Restart', 60)->msgln($summary['restart']);
+      $this->io()->info('Updates Requiring Shutdown', 60)->msgln($summary['shutdown']);
       $this->io()->blankln();
-      $this->io()->info('Console Username', 50)->msgln($summary['console_user']);
-      $this->io()->info('Content Cache', 50)->msgln(!empty($summary['content_cache']) ? implode(',', $summary['content_cache']) : 'None');
-      $this->io()->info('SUS Url', 50)->msgln($summary['sus_url'] ?: 'None');
-      $this->io()->info('Free Disk Space', 50)->msgln($summary['disk_space'].'GiB');
+      $this->io()->info('Console Username', 60)->msgln($summary['console_user']);
+      $this->io()->info('Content Cache', 60)->msgln(!empty($summary['content_cache']) ? implode(',', $summary['content_cache']) : 'None');
+      $this->io()->info('SUS Url', 60)->msgln($summary['sus_url'] ?: 'None');
+      $this->io()->info('Free Disk Space', 60)->msgln($summary['disk_space'].'GiB');
       $this->io()->blankln();
 
       // Battery Minutes
-      $this->io()->info('Battery Remaining', 50);
+      $this->io()->info('Battery Remaining', 60);
 
       if ($summary['battery_minutes'] && $summary['battery_minutes'] > 60)
       {
@@ -435,7 +442,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       }
 
       // Battery Percentage
-      $this->io()->info('Battery Percentage', 50);
+      $this->io()->info('Battery Percentage', 60);
       if ($summary['battery_percent'] && $summary['battery_percent'] < 33)
       {
         $this->io()->errorln($summary['battery_percent'].'%');
@@ -450,7 +457,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       }
 
       // On Battery Power?
-      $this->io()->info('On Battery Power?', 50);
+      $this->io()->info('On Battery Power?', 60);
       if ($summary['battery'])
       {
         $this->io()->errorln('Yes');
@@ -462,7 +469,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       $this->io()->blankln();
 
       // Encryption in Progress
-      $this->io()->info('Encryption in Progress?', 50);
+      $this->io()->info('Encryption in Progress?', 60);
       if ($summary['encrypting'])
       {
         $this->io()->errorln('Yes');
@@ -473,7 +480,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       }
 
       // Presentation in Progress
-      $this->io()->info('Screen Sleep Prevented?', 50);
+      $this->io()->info('Screen Sleep Prevented?', 60);
       if ($summary['prevent_sleep'])
       {
         $this->io()->errorln('Yes');
@@ -484,7 +491,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       }
 
       // SUS Available?
-      $this->io()->info('SUS Offline?', 50);
+      $this->io()->info('SUS Offline?', 60);
       if ($summary['sus_offline'])
       {
         $this->io()->errorln('Yes');
@@ -517,7 +524,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
   {
     if ($this->getDevice()->isAppleChip())
     {
-      $this->io()->msg('Opening SoftwareUpdate Preference Pane', 50);
+      $this->io()->msg('Opening Software Update Preference Pane', 60);
       // Apple M1 Systems require authentication from the user to install updates, therefore the best we can do is
       // trigger the preference pane to open.
       if ($user = $this->getConsoleUser())
@@ -585,7 +592,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     if ($this->isJamf() && $policy = $this->getRestartPolicy())
     {
       // Run the restart policy
-      $this->io()->msg('Triggering System Restart via Jamf', 50);
+      $this->io()->msg('Triggering System Restart via Jamf', 60);
       $this->json()->append(['jamf_restart' => $policy, 'restart' => true]);
       $flag = is_numeric($policy) ? 'id' : 'trigger';
       $data = escapeshellarg($policy);
@@ -596,14 +603,14 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       if ($this->isHaltRequired())
       {
         $this->json()->append(['halt' => true]);
-        $this->io()->msg('Triggering System Shutdown', 50);
+        $this->io()->msg('Triggering System Shutdown', 60);
         // Trigger Restart w/ Delay to Finish & Log
         $cmd = $this->getAtCommand('shutdown -h +2m');
       }
       else
       {
         $this->json()->append(['restart' => true]);
-        $this->io()->msg('Triggering System Restart', 50);
+        $this->io()->msg('Triggering System Restart', 60);
 
         // Trigger Restart w/ Delay to Finish & Log
         $cmd = $this->getAtCommand('shutdown -r +2m');
@@ -654,7 +661,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     {
       if (!$macUpdate->isRestart() && !$macUpdate->isHalt() && !$macUpdate->isBridgeOs())
       {
-        $this->io()->info('Installing '.$macUpdate->getName(), 50);
+        $this->io()->msg('Installing '.$macUpdate->getName(), 60);
         $flags = ['no-scan' => true, 'install' => $macUpdate->getId()];
 
         $SU = $this->getSoftwareUpdateDriver($flags);
@@ -689,7 +696,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
 
     if (self::EXIT_SUCCESS === $retval && $isRestart)
     {
-      $this->io()->info('Installing Remaining Updates', 50);
+      $this->io()->msg('Installing Remaining Updates', 60);
       $flags = ['install'];
 
       $SU = $this->getSoftwareUpdateDriver($flags);
@@ -753,7 +760,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
         $tests['user'] = false;
       }
 
-      if (!$this->io()->getOption('skip-screen'))
+      if ($this->io()->getOption('skip-screen'))
       {
         $tests['screen'] = false;
       }
