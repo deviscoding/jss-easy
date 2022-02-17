@@ -150,7 +150,7 @@ Works with the built in `softwareupdate` command and your MDM to facilitate the 
 * Can provide a summary of relevant information to performing updates.
 * If running `softwareupdate` without user authentication is prevented, opens the Software Update Preference pane for the console user.
 
-## Installations (--install)
+### Installations (--install)
 
 **Apple Silicon Macs**
 
