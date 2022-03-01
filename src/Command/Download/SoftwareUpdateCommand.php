@@ -138,7 +138,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     else
     {
       // These only run if there are updates...
-      if ($count == 0)
+      if (0 != $count)
       {
         if ($this->isDownload())
         {
@@ -1051,7 +1051,6 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
    *
    * @return bool
    */
-
   protected function isSusAvailable($sus = '_NONE_')
   {
     $tSus = '_NONE_' === $sus ? $this->getOs()->getSoftwareUpdateCatalogUrl() : $sus;
