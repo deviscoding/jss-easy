@@ -16,7 +16,7 @@ class Slack extends AbstractRecipe
 {
   public function getName()
   {
-    return 'Visual Studio Code';
+    return 'Slack';
   }
 
   public function getPath()
