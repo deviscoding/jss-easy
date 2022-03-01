@@ -33,7 +33,7 @@ class Rectangle extends AbstractGitHubRecipe
 
   public function getName()
   {
-    return 'Platypus';
+    return 'Rectangle';
   }
 
   public function getPath()
