@@ -71,10 +71,6 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     {
       $this->io()->getOutput()->setVerbosity(OutputInterface::VERBOSITY_QUIET);
     }
-    else
-    {
-      $this->io()->commentln('THIS COMMAND SHOULD BE CONSIDERED BETA SOFTWARE! DO NOT USE IN PRODUCTION!');
-    }
 
     $this->json()->append(['apple_silicon' => $this->getDevice()->isAppleChip()]);
 
