@@ -209,7 +209,7 @@ class SoftwareUpdateParser
   {
     if ($v = $this->getDevice()->getOs()->getVersion())
     {
-      if (11 == $v->getMajor() || 10 == $v->getMajor() && $v->getMinor() >= 15)
+      if ($v->getMajor() >= 11 || (10 == $v->getMajor() && $v->getMinor() >= 15))
       {
         return true;
       }
