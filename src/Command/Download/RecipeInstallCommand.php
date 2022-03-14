@@ -2,7 +2,7 @@
 
 namespace DevCoding\Jss\Easy\Command\Download;
 
-use DevCoding\Helper\ClassHelper;
+use DevCoding\CodeObject\Resolver\ClassResolver;
 use DevCoding\Jss\Easy\Object\Recipe\AbstractRecipe;
 use DevCoding\Mac\Command\AbstractMacConsole;
 use Symfony\Component\Console\Command\Command;
@@ -192,7 +192,7 @@ class RecipeInstallCommand extends AbstractMacConsole
       return $fqcn;
     }
 
-    if ($configured = ClassHelper::get()->getClassesInNamespace($nspace))
+    if ($configured = (new ClassResolver([$nspace]))->all())
     {
       foreach ($configured as $config)
       {
