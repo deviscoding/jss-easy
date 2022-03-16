@@ -138,7 +138,7 @@ abstract class AbstractArchiveInstallConsole extends AbstractInstallConsole
             $this->successbg($target ?? 'MATCH');
             if (!$target)
             {
-              $this->setTargetVersion($target);
+              $this->setTargetVersion($source->getShortVersion());
             }
 
             return self::CONTINUE;
