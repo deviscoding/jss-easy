@@ -80,7 +80,7 @@ class AdobeReaderDc extends AbstractRecipe
       $url = 'https://armmf.adobe.com/arm-manifests/mac/AcrobatDC/reader/current_version.txt';
       if ($res = (new DownloadHelper())->getUrl($url, null, null, $this->getUserAgent()))
       {
-        return $res['body'];
+        return trim($res['body']);
       }
     }
 
