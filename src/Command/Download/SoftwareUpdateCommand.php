@@ -47,7 +47,6 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     if ($this->isJamf())
     {
       $this->addOption('install-policy', null, InputOption::VALUE_REQUIRED, 'Install Policy Trigger or ID');
-      $this->addOption('restart-policy', null, InputOption::VALUE_REQUIRED, 'Restart Policy Trigger or ID');
     }
   }
 
@@ -585,35 +584,24 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
    */
   protected function executeRestart(InputInterface $input, OutputInterface $output)
   {
-    if ($this->isJamf() && $policy = $this->getRestartPolicy())
+    if ($this->isHaltRequired())
     {
-      // Run the restart policy
-      $this->io()->msg('Triggering System Restart via Jamf', 60);
-      $this->json()->append(['jamf_restart' => $policy, 'restart' => true]);
-      $flag = is_numeric($policy) ? 'id' : 'trigger';
-      $data = escapeshellarg($policy);
-      $cmd  = $this->getAtCommand(sprintf('/usr/local/bin/jamf policy --%s %s', $flag, $data));
+      $this->json()->append(['halt' => true]);
+      $this->io()->msg('Triggering System Shutdown', 60);
+      // Trigger Restart w/ Delay to Finish & Log
+      $cmd = $this->getAtCommand('shutdown -h +2m');
     }
     else
     {
-      if ($this->isHaltRequired())
-      {
-        $this->json()->append(['halt' => true]);
-        $this->io()->msg('Triggering System Shutdown', 60);
-        // Trigger Restart w/ Delay to Finish & Log
-        $cmd = $this->getAtCommand('shutdown -h +2m');
-      }
-      else
-      {
-        $this->json()->append(['restart' => true]);
-        $this->io()->msg('Triggering System Restart', 60);
+      $this->json()->append(['restart' => true]);
+      $this->io()->msg('Triggering System Restart', 60);
 
-        // Trigger Restart w/ Delay to Finish & Log
-        $cmd = $this->getAtCommand('shutdown -r +2m');
-      }
+      // Trigger Restart w/ Delay to Finish & Log
+      $cmd = $this->getAtCommand('shutdown -r +2m');
     }
 
-    if ($this->getShellExec($cmd))
+    exec($cmd, $output, $retval);
+    if (0 === $retval)
     {
       $this->io()->successln('[SUCCESS]');
 
@@ -714,6 +702,11 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       {
         $this->io()->successln('[SUCCESS]');
         $this->json()->append(['install' => array_fill_keys($remains, true)]);
+
+        if (OutputInterface::VERBOSITY_VERBOSE === $this->io()->getVerbosity())
+        {
+          $this->io()->writeln($SU->getOutput(false));
+        }
 
         // Will continue to a restart
         $retval = self::CONTINUE;
@@ -962,7 +955,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
   {
     if (file_exists('/usr/bin/at'))
     {
-      return sprintf("%s now <<ENDBGCMD >/dev/null 2>&1\n%s\nENDBGCMD", '/usr/bin/at', $cmd);
+      return sprintf('echo "%s" | %s now + 2 minutes >/dev/null 2>&1', $cmd, '/usr/bin/at');
     }
 
     throw new \Exception('The AT binary was not found at /usr/bin/at');

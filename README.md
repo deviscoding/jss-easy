@@ -143,12 +143,13 @@ Works with the built in `softwareupdate` command and your MDM to facilitate the 
 
 * Wait Condition Monitoring (similar to the Wait command documented below), including whether the SUS is available.
 * Can trigger a Jamf policy for the installation of updates rather than using `softwareupdate`
-* Can trigger a Jamf policy for the restart of a system, rather than using `softwareupdate` or `shutdown`.
 * Returns a non-zero exit code when a lack of disk space prevents installations.
 * Allows for Json output.
 * Can provide a simple count of updates to install.
 * Can provide a summary of relevant information to performing updates.
 * If running `softwareupdate` without user authentication is prevented, opens the Software Update Preference pane for the console user.
+
+IMPORTANT NOTE: This command currently requires the `at` daemon for restart functionality.
 
 ### Installations (--install)
 
@@ -159,8 +160,6 @@ If the computer is using Apple Silicon, the Software Update preference pane is o
 **Other Macs**
 
 If the `install-policy` option is provided, the Jamf Policy is used instead of running `softwareupdate` for the installations, otherwise the `softwareupdate` binary is utilized. When using the `softwareupdate` binary, all non-restart updates are installed individually, then any updates requiring a restart are installed in a batch.  This allows us to provide the maximum amount of feedback on the success or failure of updates installed.
-
-If the `restart-policy` option is provided, the Jamf Policy is sued instead of running `shutdown` for updates that require a restart or halt.  This allows for an authenticated restart on FileVault 2 enabled Macs.  If the `restart-policy` option is not provided, the `shutdown` binary is used to restart or halt the computer as needed for the updates that were installed.
 
 |Flags  | Purpose |  
 |--|--|  
@@ -176,7 +175,6 @@ If the `restart-policy` option is provided, the Jamf Policy is sued instead of r
 | skip-screen | Do not wait for screen availability |
 | wait | The number of seconds to wait for wait conditions.  Defaults to 60 seconds. |
 | install-policy | The trigger or ID for a Jamf Pro policy that installs updates using the Software Update payload. |
-| restart-policy | The trigger or ID for a Jamf Pro policy with no payload that forces a FileVault 2 authenticated restart. |
 | json | Show any output in JSON format. |
 | timeout | The amount of time in seconds that is allowed for any one `softwareupdate` command to complete.  Defaults to 7200 seconds (2 hours)
 
