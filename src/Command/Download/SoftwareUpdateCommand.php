@@ -495,6 +495,17 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       {
         $this->io()->successln('No');
       }
+
+      // Halt Required
+      $this->io()->info('Halt Required?', 60);
+      if ($summary['halt_required'])
+      {
+        $this->io()->errorln('Yes');
+      }
+      else
+      {
+        $this->io()->successln('No');
+      }
     }
 
     return self::EXIT_SUCCESS;
@@ -828,6 +839,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
         'sus_offline'     => !$this->isSusAvailable($susUrl),
         'sus_url'         => $this->getDevice()->getOs()->getSoftwareUpdateCatalogUrl(),
         'content_cache'   => $this->getDevice()->getOs()->getSharedCaches(),
+        'halt_required'   => $this->isHaltRequired(),
     ];
 
     foreach ($Updates as $Update)
