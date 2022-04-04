@@ -681,7 +681,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     if (self::EXIT_SUCCESS === $retval && $isRestart)
     {
       $this->io()->msg('Installing Remaining Updates', 60);
-      $flags = ['install'];
+      $flags = ['no-scan' => true, 'install' => true, 'all' => true];
 
       $SU = $this->getSoftwareUpdateDriver($flags);
       $SU->run();
