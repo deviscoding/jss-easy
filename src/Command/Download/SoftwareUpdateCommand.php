@@ -1153,6 +1153,25 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
   }
 
   /**
+   * Returns an opinionated determination of whether the CPU load is 'high' based on the current load and the number of
+   * CPU cores. Loads greater than half the number of CPU cores are considered high.  This intentionally conservative.
+   *
+   * @return bool
+   */
+  protected function isLoadHigh()
+  {
+    if (function_exists('sys_getloadavg'))
+    {
+      $cores = $this->getDevice()->getCpuCores();
+      $load  = sys_getloadavg();
+
+      return isset($load[0]) && (float) $load[0] > $cores;
+    }
+
+    return false;
+  }
+
+  /**
    * @return string|null
    */
   protected function getInstallPolicy()
