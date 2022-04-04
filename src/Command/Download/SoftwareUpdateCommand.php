@@ -1034,7 +1034,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       $Updates = $this->getUpdateList();
       foreach ($Updates as $macUpdate)
       {
-        if ($macUpdate->isRestart() || ($macUpdate->isBridgeOs() && !empty($this->getRestartPolicy())))
+        if ($macUpdate->isRestart() || $macUpdate->isBridgeOs())
         {
           return true;
         }
@@ -1055,10 +1055,15 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
   {
     try
     {
-      $Updates = $this->getUpdateList();
+      $Updates  = $this->getUpdateList();
+      $isSecure = $this->getDevice()->isSecurityChip();
       foreach ($Updates as $macUpdate)
       {
-        if ($macUpdate->isHalt() || ($macUpdate->isBridgeOs() && empty($this->getRestartPolicy())))
+        if ($macUpdate->isHalt())
+        {
+          return true;
+        }
+        elseif ($macUpdate->isBridgeOs() && $isSecure)
         {
           return true;
         }
