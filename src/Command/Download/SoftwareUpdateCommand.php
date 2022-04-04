@@ -589,7 +589,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       $this->json()->append(['halt' => true]);
       $this->io()->msg('Triggering System Shutdown', 60);
       // Trigger Restart w/ Delay to Finish & Log
-      $cmd = $this->getAtCommand('shutdown -h +2m');
+      $cmd = $this->getShutdownCommand('h', '2m');
     }
     else
     {
@@ -597,7 +597,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       $this->io()->msg('Triggering System Restart', 60);
 
       // Trigger Restart w/ Delay to Finish & Log
-      $cmd = $this->getAtCommand('shutdown -r +2m');
+      $cmd = $this->getShutdownCommand('r', '2m');
     }
 
     exec($cmd, $output, $retval);
@@ -962,6 +962,27 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
   }
 
   /**
+   * @param string $flag
+   * @param string $time
+   *
+   * @return string
+   *
+   * @throws \Exception
+   */
+  protected function getShutdownCommand($flag, $time = '2m')
+  {
+    $cmd = sprintf('/sbin/shutdown -%s +%s', $flag, $time);
+    if ($this->isAtEnabled())
+    {
+      return $this->getAtCommand($cmd);
+    }
+    else
+    {
+      return sprintf('%s >/dev/null 2>&1 &', $cmd);
+    }
+  }
+
+  /**
    * @param string[] $flags
    *
    * @return SoftwareUpdateDriver
@@ -985,6 +1006,21 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     }
 
     return $driver;
+  }
+
+  /**
+   * @return bool
+   */
+  protected function isAtEnabled()
+  {
+    if (file_exists('/usr/bin/at'))
+    {
+      exec('/bin/launchctl list | /usr/bin/grep -q com.apple.atrun', $output, $retval);
+
+      return 0 === $retval;
+    }
+
+    return false;
   }
 
   /**
