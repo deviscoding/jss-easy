@@ -589,7 +589,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       $this->json()->append(['halt' => true]);
       $this->io()->msg('Triggering System Shutdown', 60);
       // Trigger Restart w/ Delay to Finish & Log
-      $cmd = $this->getShutdownCommand('h', '2m');
+      $cmd = $this->getShutdownCommand('h', 2);
     }
     else
     {
@@ -597,7 +597,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
       $this->io()->msg('Triggering System Restart', 60);
 
       // Trigger Restart w/ Delay to Finish & Log
-      $cmd = $this->getShutdownCommand('r', '2m');
+      $cmd = $this->getShutdownCommand('r', 2);
     }
 
     exec($cmd, $output, $retval);
@@ -945,17 +945,18 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
   }
 
   /**
-   * @param $cmd
+   * @param string $cmd
+   * @param int    $minutes
    *
    * @return string
    *
    * @throws \Exception
    */
-  protected function getAtCommand($cmd)
+  protected function getAtCommand($cmd, $minutes = 2)
   {
     if (file_exists('/usr/bin/at'))
     {
-      return sprintf('echo "%s" | %s now + 2 minutes >/dev/null 2>&1', $cmd, '/usr/bin/at');
+      return sprintf('echo "%s" | %s now + %s minutes >/dev/null 2>&1', $cmd, '/usr/bin/at', $minutes);
     }
 
     throw new \Exception('The AT binary was not found at /usr/bin/at');
@@ -963,22 +964,22 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
 
   /**
    * @param string $flag
-   * @param string $time
+   * @param int    $minutes
    *
    * @return string
    *
    * @throws \Exception
    */
-  protected function getShutdownCommand($flag, $time = '2m')
+  protected function getShutdownCommand($flag, $minutes = 2)
   {
-    $cmd = sprintf('/sbin/shutdown -%s +%s', $flag, $time);
+    $cmd = sprintf('/sbin/shutdown -%s', $flag);
     if ($this->isAtEnabled())
     {
-      return $this->getAtCommand($cmd);
+      return $this->getAtCommand($cmd.' now');
     }
     else
     {
-      return sprintf('%s >/dev/null 2>&1 &', $cmd);
+      return sprintf('%s +%sm >/dev/null 2>&1 &', $cmd, $minutes);
     }
   }
 
