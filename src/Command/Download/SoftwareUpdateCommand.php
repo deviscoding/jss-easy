@@ -410,6 +410,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
     {
       $this->io()->info('Total Updates', 60)->msgln($summary['count']);
       $this->io()->info('Recommended Updates', 60)->msgln($summary['recommended']);
+      $this->io()->info('BridgeOS Updates', 60)->msgln($summary['bridgeos']);
       $this->io()->info('Updates Requiring Restart', 60)->msgln($summary['restart']);
       $this->io()->info('Updates Requiring Shutdown', 60)->msgln($summary['shutdown']);
       $this->io()->blankln();
