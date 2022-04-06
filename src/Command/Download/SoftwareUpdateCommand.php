@@ -984,15 +984,7 @@ class SoftwareUpdateCommand extends AbstractWaitConsole
    */
   protected function getShutdownCommand($flag, $minutes = 2)
   {
-    $cmd = sprintf('/sbin/shutdown -%s', $flag);
-    if ($this->isAtEnabled())
-    {
-      return $this->getAtCommand($cmd.' now');
-    }
-    else
-    {
-      return sprintf('%s +%sm >/dev/null 2>&1 &', $cmd, $minutes);
-    }
+    return sprintf('/sbin/shutdown -%s +%sm >/dev/null 2>&1 &', $flag, $minutes);
   }
 
   /**
