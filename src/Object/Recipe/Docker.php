@@ -85,7 +85,7 @@ class Docker extends AbstractRecipe
    */
   protected function getReleaseNotes()
   {
-    $url = 'https://docs.docker.com/desktop/mac/release-notes/';
+    $url = 'https://docs.docker.com/desktop/release-notes/';
     $ua  = $this->getUserAgent();
 
     if ($resp = (new DownloadHelper())->getUrl($url, null, null, $ua))
