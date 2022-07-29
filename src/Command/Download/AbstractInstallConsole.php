@@ -364,7 +364,7 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
     $new  = $this->getAppVersion($this->getDestination());
     $comp = ($app_or_ver instanceof MacApplication) ? $this->getAppVersion($app_or_ver) : $app_or_ver;
 
-    if (0 == strpos($new->getRaw(), 'Build _'))
+    if (0 === strpos($new->getRaw(), 'Build _'))
     {
       $new = new SemanticVersion('0.0+'.$new->getBuild());
     }

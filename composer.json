@@ -16,7 +16,7 @@
     },
     "prefer-stable": true,
     "minimum-stability": "dev",
-    "version": "4.0.10",
+    "version": "4.0.11",
     "require": {
         "php": ">=7.1",
         "ext-json": "*",

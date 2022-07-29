@@ -99,7 +99,7 @@ class GenericRecipe extends AbstractRecipe
         $cVer = new SemanticVersion($ver);
         $oVer = $offered->getShortVersion() ?? $offered->getVersion();
 
-        if (0 == strpos($oVer->getRaw(), 'Build _'))
+        if (0 === strpos($oVer->getRaw(), 'Build _'))
         {
           $oVer = new SemanticVersion('0.0+'.$oVer->getBuild());
         }
