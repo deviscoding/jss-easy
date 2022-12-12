@@ -667,6 +667,11 @@ abstract class AbstractInstallConsole extends AbstractMacConsole
         $error = $Process->getOutput();
       }
 
+      if (false !== strpos($error, 'MainMenu.nib: Not a directory'))
+      {
+        return true;
+      }
+
       return false;
     }
 
