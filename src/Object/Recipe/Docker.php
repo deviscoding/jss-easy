@@ -64,7 +64,7 @@ class Docker extends AbstractRecipe
           $crawler = $crawler->filter('h2' )->reduce(function (Crawler $node, $i) {
             $id = $node->attr('id');
 
-            return false !== stripos($id, 'docker-desktop');
+            return false !== is_numeric($id);
           } );
 
           if ($full = $crawler->getNode(0)->textContent)
