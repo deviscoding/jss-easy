@@ -26,7 +26,7 @@ class AdobeReaderDc extends AbstractRecipe
 
   public function getPath()
   {
-    return '/Applications/Adobe Acrobat Reader DC.app';
+    return '/Applications/Adobe Acrobat Reader.app';
   }
 
   /**
